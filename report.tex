@@ -251,8 +251,8 @@ For $x(n)$, the origin translates to $x(-2)=1, x(-1)=-2, x(0)=3, x(1)=6$. We sys
     \begin{equation}y_1(n) = \{6, 3\uparrow, -2, 1\}\end{equation}
     \item \textbf{Advance (Time-Shift):} $y_2(n) = x(n+3)$. The addition inside the argument denotes an advancement. The whole sequence is shifted to the left along the time axis by 3 sample units.
     \begin{equation}y_2(n) = \{1, -2, 3, 6, 0, 0\uparrow\}\end{equation}
-    \item \textbf{Composite Operations:} $y_3(n) = 2x(-(n+2))$. By evaluating transformations sequentially according to precedence rules: first shift left by 2 ($x(n+2)$), then perform folding ($x(-(n+2))$), and finally apply an amplitude scaling factor of $2$.
-    \begin{equation}y_3(n) = \{12, 6\uparrow, -4, 2\}\end{equation}
+    \item \textbf{Composite Operations:} $y_3(n) = 2x(-(n+2))$. To evaluate this correctly: first perform folding to get $x(-n)$, then shift left by 2 to get $x(-(n+2))$, and finally apply an amplitude scaling factor of $2$.
+    \begin{equation}y_3(n) = \{12, 6, -4, 2\uparrow\}\end{equation}
 \end{enumerate}
 
 \begin{figure}[H]
