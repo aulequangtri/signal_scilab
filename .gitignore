@@ -1,0 +1,21 @@
+# Python scripts for extraction
+extract_images.py
+extract_info.py
+output.txt
+
+# LaTeX build files
+*.aux
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+
+# Raw documents and reference PDFs
+Lap1_lap2.docx
+~$p1_lap2.docx
+DSP2627*.pdf
+HCMUT_DSP_Report.pdf
+
+# Temp files
+*~
+*.sod

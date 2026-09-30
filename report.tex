@@ -1,0 +1,273 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage{header} % Use the provided header format
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+
+\begin{document}
+
+\begin{center}
+    \textbf{Digital Signal Processing \hfill HK242 \hfill CO2036}\\[2cm]
+    
+    {\huge \bfseries DIGITAL SIGNAL PROCESSING LAB REPORT}\\[1cm]
+    
+    {\large Student Name - Student ID}\\[0.5cm]
+    {\large Student Name - Student ID}\\[1cm]
+    
+    {\large \today}\\[2cm]
+\end{center}
+
+\section*{Overview}
+This report summarizes the results of the Digital Signal Processing laboratory exercises, specifically focusing on generating, manipulating, and analyzing discrete-time signals and systems using Scilab. The report covers Lab 1 and Lab 2.
+
+\section{Introduction}
+The laboratory exercises provide practical experience with continuous-time to discrete-time signal conversion, signal properties, and elementary discrete-time operations. By utilizing Scilab, theoretical concepts such as sampling, quantization, time-shifting, folding, and signal arithmetic are modeled and visualized to deepen our mathematical understanding.
+
+\section{Objectives}
+The objectives achieved upon completing these laboratory sessions include:
+\begin{itemize}
+    \item Utilizing Scilab for vector and matrix initializations.
+    \item Understanding the sampling theorem and the quantization process (ADC procedure).
+    \item Visualizing discrete signals via functions such as \texttt{plot2d3} and utilizing graph annotations.
+    \item Implementing fundamental operations on discrete-time signals, including addition, multiplication, time-shifting, and time-reversal.
+    \item Extracting the even and odd components of a given discrete-time sequence.
+\end{itemize}
+
+\section{Methodology}
+The exercises were conducted on a Windows environment using the Scilab numerical computing software. Mathematical formulas from the time-domain representation of discrete signals were translated into Scilab scripts. Vectorized operations and padding techniques were applied where necessary to align discrete sequences prior to manipulation.
+
+\section{Practical Contents}
+
+\subsection{Lab 1}
+
+\subsubsection*{Exercise 1.1}
+\textbf{Question:} Using the operators in vector and matrix to do the following tasks:
+\begin{itemize}
+    \item Create a vector in the form of $(x_1+1, x_2+1, x_3+1, x_4+1)$ where $x_1, x_2, x_3, x_4$ are components of vector $x=1:4$.
+    \item Create a vector in the form of $(x_1y_1, x_2y_2, x_3y_3, x_4y_4)$ where $x_1\dots x_4$ and $y_1\dots y_4$ are components of vector $x=1:4$ and vector $y=5:8$, respectively.
+    \item Create a vector in the form of $(\sin(x_1), \sin(x_2), \dots, \sin(x_{10}))$ where $x$ is a vector of 10 values linearly chosen in the interval $[0, \pi]$.
+\end{itemize}
+
+\textbf{Explanation:} 
+This exercise introduces element-wise vector operations in Scilab. 
+\begin{itemize}
+    \item For the first task, adding a scalar to a vector adds that scalar to every element identically: $x + 1 \Rightarrow [2, 3, 4, 5]$.
+    \item The second task requires element-by-element multiplication (the Hadamard product). In Scilab, this is executed using the \texttt{.*} operator, multiplying elements at corresponding indices: $x .* y \Rightarrow [1\times 5, 2\times 6, 3\times 7, 4\times 8]$.
+    \item The third task utilizes the \texttt{linspace(0, \%pi, 10)} function to generate an array of $N=10$ linearly spaced points. The \texttt{sin()} function is then mapped across the generated vector space.
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{extracted_images/Lab1_Ex1.1_1.png}
+    \caption{Result of Ex 1.1 - Part 1}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{extracted_images/Lab1_Ex1.1_2.png}
+    \caption{Result of Ex 1.1 - Part 2}
+\end{figure}
+
+\subsubsection*{Exercise 1.2}
+\textbf{Question:} Consider the analog signal $x_a(t) = 3\sin(100\pi t)$.
+\begin{itemize}
+    \item Use Scilab to draw $x_a(t)$ in 5 periods.
+    \item Determine the discrete-time signal $x(n)$ of the signal $x_a(t)$ that is sampled with a sampling rate $F_s = 300$ samples/s.
+    \item Determine the discrete-time signal $x(n)$ and determine its periodic property. If $x(n)$ is a periodic signal, determine the frequency and period of $x(n)$. Then, use Scilab to draw $x(n)$ in 5 periods.
+    \item Determine the quantized signal $x_q(n)$ if $\Delta = 0.1$ using the truncated method. Then, draw $x_q(n)$ in 5 periods. All figures must be displayed in a single window.
+\end{itemize}
+
+\textbf{Explanation:}
+Given $x_a(t) = 3\sin(100\pi t)$, the analog frequency is $F_0 = 50$ Hz. By applying the sampling theorem with $F_s = 300$ Hz, the sampling interval is $T_s = 1/F_s$. Substituting $t = nT_s$:
+\begin{equation}
+    x(n) = x_a(nT_s) = 3\sin\left(100\pi \frac{n}{300}\right) = 3\sin\left(\frac{\pi}{3} n\right)
+\end{equation}
+A discrete sinusoid is periodic if its digital frequency $f = \frac{F_0}{F_s} = \frac{50}{300} = \frac{1}{6}$ is a rational number. Because $f = \frac{1}{6}$, $x(n)$ is periodic. The fundamental period is determined by $N = \frac{K}{f}$ where $K$ is the smallest integer yielding an integer $N$. Thus, for $K=1$, the discrete period is $N = 6$ samples.
+
+For quantization, we apply a truncation method with step size $\Delta = 0.1$. The truncated value $x_q(n)$ is obtained via the floor operation after normalizing by $\Delta$:
+\begin{equation}
+    x_q(n) = \Delta \lfloor \frac{x(n)}{\Delta} \rfloor = 0.1 \lfloor 10 \cdot x(n) \rfloor
+\end{equation}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{extracted_images/Lab1_Ex1.2_1.png}
+    \caption{Result of Ex 1.2 - Analog and Discrete Signal}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{extracted_images/Lab1_Ex1.2_2.png}
+    \caption{Result of Ex 1.2 - Quantized Signal and Errors}
+\end{figure}
+
+\subsection{Lab 2}
+
+\subsubsection*{Exercise 1: Investigate Basic Functions}
+\textbf{Question:} Let's investigate the following functions on Scilab and briefly report their functionalities and how to use it: \texttt{plot2d3, min, max, subplot, title, xlabel, ylabel, bool2s, deff}.
+
+\textbf{Explanation:}
+This exercise evaluates fundamental plotting and computational functions:
+\begin{itemize}
+    \item \texttt{plot2d3(x, y)}: Plots vertical lines (stems) representing discrete-time samples. It is strictly used for discrete signals to highlight values at integer indices.
+    \item \texttt{max()} and \texttt{min()}: Calculates the maximum/minimum elements in a matrix or vector array, highly useful for determining normalization constants or quantization step limits.
+    \item \texttt{subplot(m, n, p)}: Divides the graphic window into an $m \times n$ matrix of sub-windows, selecting the $p^{th}$ window for the active plot.
+    \item \texttt{title()}, \texttt{xlabel()}, \texttt{ylabel()}: These functions add textual annotations to the graph. \texttt{title()} sets the main heading, while \texttt{xlabel()} and \texttt{ylabel()} label the respective axes, which is crucial for identifying discrete components properly.
+    \item \texttt{bool2s()}: Converts a boolean array containing \%T and \%F into a numerical array of 1s and 0s. This is mathematically equivalent to the Heaviside step function evaluating a logic condition.
+    \item \texttt{deff()}: Defines inline custom functions on the fly, similar to lambda expressions. Syntax: \texttt{deff("[y] = f(x)", "y = ...")}.
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.45\textwidth]{extracted_images/Lab2_Ex1_plot2d3_2.png}
+    \caption{plot2d3 Usage}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.45\textwidth]{extracted_images/Lab2_Ex1_max.png}
+    \caption{max() Usage}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.45\textwidth]{extracted_images/Lab2_Ex1_min_1.png}
+    \caption{min() Usage}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.45\textwidth]{extracted_images/Lab2_Ex1_subplot_1.png}
+    \caption{subplot() + title() + xlabel() + ylabel() Usage}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{extracted_images/Lab2_Ex1_deff.png}
+    \caption{deff Usage}
+\end{figure}
+
+\subsubsection*{Exercise 2 \& Exercise 3}
+\textbf{Question:} Try the following scripts on Scilab and report your understanding after observing the output.
+\begin{itemize}
+    \item \texttt{n = -5:5; msignal = bool2s(n >= 0); plot2d3(n, msignal)}
+    \item \texttt{n = -5:5; msignal = bool2s(n == 0); plot2d3(n, msignal)}
+\end{itemize}
+
+\textbf{Explanation:}
+\begin{itemize}
+    \item \textbf{Exercise 2:} The logical condition \texttt{n >= 0} evaluates to True for $n \ge 0$ and False otherwise. \texttt{bool2s} transforms these booleans into numeric 1s and 0s. The output precisely replicates the mathematical definition of a \textbf{unit step sequence} $u(n)$:
+    \begin{equation}
+        u(n) = \begin{cases} 1, & n \ge 0 \\ 0, & n < 0 \end{cases}
+    \end{equation}
+    \item \textbf{Exercise 3:} The equality \texttt{n == 0} is true only at the origin point $n = 0$. Consequently, applying \texttt{bool2s} creates a sequence that represents the \textbf{unit sample sequence (discrete Dirac delta function)} $\delta(n)$:
+    \begin{equation}
+        \delta(n) = \begin{cases} 1, & n = 0 \\ 0, & n \neq 0 \end{cases}
+    \end{equation}
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{extracted_images/Lab2_Ex2.png}
+    \caption{Result of Ex 2 - Unit Step Sequence $u(n)$}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{extracted_images/Lab2_Ex3.png}
+    \caption{Result of Ex 3 - Unit Sample Sequence $\delta(n)$}
+\end{figure}
+
+\subsubsection*{Exercise 4: Unit Ramp Signal}
+\textbf{Question:} Use Scilab to draw the unit ramp signal $u_r(n)$ for $n=-5:5$.
+
+\textbf{Explanation:} The discrete unit ramp signal is mathematically defined as the integral of the unit step function, or more precisely:
+\begin{equation}
+    u_r(n) = n \cdot u(n) = \begin{cases} n, & n \ge 0 \\ 0, & n < 0 \end{cases}
+\end{equation}
+In Scilab, this is implemented natively by executing an element-wise product between the index space array $n$ and the previously defined unit step array.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{extracted_images/Lab2_Ex4.png}
+    \caption{Result of Ex 4 - Unit Ramp Signal}
+\end{figure}
+
+\subsubsection*{Exercise 5: Even and Odd Components}
+\textbf{Question:} Given a discrete-time signal $x(n)=\{1, 3\uparrow, -2\}$. Use Scilab to draw the signal $x(n)$, the odd signal component $x_o(n)$, and the even signal component $x_e(n)$.
+
+\textbf{Explanation:} 
+The arrow signifies the origin index $n=0$. The sequence is thus explicitly indexed as $x(-1)=1, x(0)=3, x(1)=-2$. 
+According to signal properties, any arbitrary sequence can be perfectly decomposed into an even-symmetric component $x_e(n)$ and an odd-symmetric component $x_o(n)$. 
+We first evaluate the folded (time-reversed) sequence $x(-n)$. Using the decomposition formula:
+\begin{equation}
+    x_e(n) = \frac{x(n) + x(-n)}{2}, \quad x_o(n) = \frac{x(n) - x(-n)}{2}
+\end{equation}
+Calculations yield $x_e(-1) = -0.5, x_e(0) = 3, x_e(1) = -0.5$, and correspondingly $x_o(-1) = 1.5, x_o(0) = 0, x_o(1) = -1.5$. Scilab strictly mirrors these mathematical operations linearly. Therefore, the resulting sequences are:
+\begin{equation}
+    x_e(n) = \{-0.5, 3\uparrow, -0.5\}, \quad x_o(n) = \{1.5, 0\uparrow, -1.5\}
+\end{equation}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{extracted_images/Lab2_Ex5.png}
+    \caption{Result of Ex 5 - Even and Odd Decomposition}
+\end{figure}
+
+\subsubsection*{Exercise 6 \& 7: Addition and Multiplication of Signals}
+\textbf{Question:} 
+\begin{itemize}
+    \item \textbf{Exercise 6:} Given two discrete-time signals $x_1(n)=\{0\uparrow, 1, 3, -2\}$ and $x_2(n)=\{0, 1\uparrow, 2, 3\}$. Determine $y(n) = x_1(n) + x_2(n)$.
+    \item \textbf{Exercise 7:} Given the same signals, determine $y(n) = x_1(n) \cdot x_2(n)$.
+\end{itemize}
+
+\textbf{Explanation:}
+Because the two sequences span different bounded domain intervals ($x_1(n)$ spans $[0, 3]$ and $x_2(n)$ spans $[-1, 2]$), they cannot be directly operated on using primitive arrays.
+To implement a rigorous sample-by-sample operation, we determine the union of both index domains: $[\min(n_{1_{min}}, n_{2_{min}}), \max(n_{1_{max}}, n_{2_{max}})] = [-1, 3]$. Both vectors are then symmetrically zero-padded to conform to this unified domain grid.
+Once the sequences structurally align relative to the time origin $n=0$:
+\begin{equation}
+    y_{add}(n) = x_1(n) + x_2(n) = \{0, 1\uparrow, 3, 6, -2\}
+\end{equation}
+\begin{equation}
+    y_{mult}(n) = x_1(n) \cdot x_2(n) = \{0, 0\uparrow, 2, 9, 0\} \text{ or simply } \{0\uparrow, 2, 9\}
+\end{equation}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{extracted_images/Lab2_Ex6.png}
+    \caption{Result of Ex 6 - Addition of Signals}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{extracted_images/Lab2_Ex7.png}
+    \caption{Result of Ex 7 - Multiplication of Signals}
+\end{figure}
+
+\subsubsection*{Exercise 8: Signal Manipulations}
+\textbf{Question:} Given a discrete-time signal $x(n)=\{1, -2, 3\uparrow, 6\}$. Determine the following signals and draw both original and manipulated signals:
+1. $y_1(n) = x(-n)$
+2. $y_2(n) = x(n+3)$
+3. $y_3(n) = 2x(-n-2)$
+
+\textbf{Explanation:}
+For $x(n)$, the origin translates to $x(-2)=1, x(-1)=-2, x(0)=3, x(1)=6$. We systematically apply independent operations on the sequence index variables:
+\begin{enumerate}
+    \item \textbf{Folding (Time-Reversal):} $y_1(n) = x(-n)$. Every index evaluates to its symmetrical negative counterpart. Resulting indices: $[-1, 2]$. 
+    \begin{equation}y_1(n) = \{6, 3\uparrow, -2, 1\}\end{equation}
+    \item \textbf{Advance (Time-Shift):} $y_2(n) = x(n+3)$. The addition inside the argument denotes an advancement. The whole sequence is shifted to the left along the time axis by 3 sample units.
+    \begin{equation}y_2(n) = \{1, -2, 3, 6, 0, 0\uparrow\}\end{equation}
+    \item \textbf{Composite Operations:} $y_3(n) = 2x(-(n+2))$. By evaluating transformations sequentially according to precedence rules: first shift left by 2 ($x(n+2)$), then perform folding ($x(-(n+2))$), and finally apply an amplitude scaling factor of $2$.
+    \begin{equation}y_3(n) = \{12, 6\uparrow, -4, 2\}\end{equation}
+\end{enumerate}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{extracted_images/Lab2_Ex8.png}
+    \caption{Result of Ex 8 - Signal Manipulations}
+\end{figure}
+
+\section{Discussion}
+The laboratory thoroughly consolidated the theoretical understanding of discrete-time signals using systematic computational approaches. Scilab proved to be a versatile platform, allowing direct vector mapping of discrete mathematical formulas and offering visual validations through its \texttt{plot2d3} subroutines. Specifically, manual implementations of zero-padding demonstrated exactly how sequences must be mutually aligned relative to an origin reference prior to algebraic operations.
+
+\section{References}
+\begin{itemize}
+    \item Digital Signal Processing Lecture Notes - Ho Chi Minh City University of Technology.
+    \item Scilab Online Manuals.
+\end{itemize}
+
+\end{document}

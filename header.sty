@@ -1,0 +1,162 @@
+
+\usepackage{a4wide,amssymb,epsfig,latexsym,multicol,array,hhline,fancyhdr}
+% \usepackage{vntex}
+\usepackage{amsmath}
+\usepackage{lastpage}
+\usepackage[lined,boxed,commentsnumbered]{algorithm2e}
+\usepackage{enumerate}
+\usepackage{color}
+\usepackage{graphicx}							% Standard graphics package
+\usepackage{minted}
+\usepackage{array}
+\usepackage{tabularx, caption}
+\usepackage{multirow}
+\usepackage{multicol}
+\usepackage{rotating}
+\usepackage{graphics}
+\usepackage[left=2cm, right=2cm, top=2.5cm, bottom=3.5cm]{geometry}
+\usepackage{setspace}
+\usepackage{epsfig}
+\usepackage{tikz}
+\usepackage{framed}
+\usepackage[listings,theorems]{tcolorbox}
+\usepackage{lineno}
+\usepackage{listings}
+\usetikzlibrary{arrows,snakes,backgrounds}
+\usepackage{hyperref}
+\usepackage{sectsty}
+\usepackage{titlesec}
+\usepackage{wrapfig}
+\usepackage{float}
+\usepackage{import}
+\usepackage{indentfirst}
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[table]{xcolor}
+\definecolor{headergray}{HTML}{D9D9D9}
+
+\definecolor{resultboxgray}{HTML}{E9E9E9}
+\definecolor{resultboxborder}{HTML}{B8B8B8}
+
+\newtcolorbox{resultbox}[1][Result]{%
+  enhanced, breakable,
+  colback=white, colframe=resultboxborder,
+  colbacktitle=resultboxgray, coltitle=black,
+  fonttitle=\bfseries,
+  title=#1,
+  attach boxed title to top left={xshift=0mm, yshift=0mm},
+  boxed title style={colframe=resultboxborder, sharp corners},
+  top=2mm, bottom=2mm, left=2mm, right=2mm,
+  sharp corners=downhill,
+  before skip=6pt, after skip=6pt
+}
+
+\newtcolorbox{consoleoutput}[1][Result]{%
+  enhanced, breakable,
+  colback=white, colframe=resultboxborder,
+  colbacktitle=resultboxgray, coltitle=black,
+  fonttitle=\bfseries,
+  title=#1,
+  attach boxed title to top left={xshift=0mm, yshift=0mm},
+  boxed title style={colframe=resultboxborder, sharp corners},
+  top=2mm, bottom=2mm, left=2mm, right=2mm,
+  sharp corners=downhill,
+  before skip=6pt, after skip=6pt,
+  fontupper=\ttfamily\small
+}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+
+\hypersetup{urlcolor=blue,linkcolor=black,citecolor=black,colorlinks=true} 
+%\usepackage{pstcol} 								% PSTricks with the standard color package
+
+\newtheorem{theorem}{{\bf Theorem}}
+\newtheorem{property}{{\bf Property}}
+\newtheorem{proposition}{{\bf Proposition}}
+\newtheorem{corollary}[proposition]{{\bf Corollary}}
+\newtheorem{lemma}[proposition]{{\bf Lemma}}
+
+\AtBeginDocument{\renewcommand*\contentsname{Contents}}
+\AtBeginDocument{\renewcommand*\refname{References}}
+%\usepackage{fancyhdr}
+\setlength{\headheight}{40pt}
+\pagestyle{fancy}
+\fancyhead{} % clear all header fields
+\fancyhead[L]{
+ \begin{tabular}{rl}
+    \begin{picture}(25,15)(0,0)
+    \put(0,-8){\includegraphics[width=10mm, height=10mm]{images/hcmut.png}}
+    %\put(0,-8){\epsfig{width=10mm,figure=hcmut.eps}}
+   \end{picture}&
+	%\includegraphics[width=8mm, height=8mm]{hcmut.png} & %
+	\begin{tabular}{l}
+		 \ttfamily University of Technology, Ho Chi Minh City\\ [1ex]
+	\end{tabular} 	
+ \end{tabular}
+}
+\fancyhead[R]{
+	\begin{tabular}{l}
+		\tiny \bf \\
+		\tiny \bf 
+	\end{tabular}  }
+\fancyfoot{} % clear all footer fields
+\fancyfoot[L]{\scriptsize \ttfamily Physics 1 MATLAB Project - Semester 252 - 2026}
+\fancyfoot[R]{\scriptsize \ttfamily Page {\thepage}/\pageref{LastPage}}
+\renewcommand{\headrulewidth}{0.3pt}
+\renewcommand{\footrulewidth}{0.3pt}
+
+
+%%%
+\setcounter{secnumdepth}{4}
+\setcounter{tocdepth}{3}
+\makeatletter
+\newcounter {subsubsubsection}[subsubsection]
+\renewcommand\thesubsubsubsection{\thesubsubsection .\@alph\c@subsubsubsection}
+\newcommand\subsubsubsection{\@startsection{subsubsubsection}{4}{\z@}%
+                                     {-3.25ex\@plus -1ex \@minus -.2ex}%
+                                     {1.5ex \@plus .2ex}%
+                                     {\normalfont\normalsize\bfseries}}
+\newcommand*\l@subsubsubsection{\@dottedtocline{3}{10.0em}{4.1em}}
+\newcommand*{\subsubsubsectionmark}[1]{}
+\makeatother
+
+\newcommand{\dstc}[2]
+{
+\newdimen\stringwidth\setbox0=\hbox{#1}
+\stringwidth=\wd0
+\hspace*{-\parindent}\hspace*{.5\textwidth}\hspace*{-.5\wd0}#1\hfill #2\bigskip
+}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle1}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{blue},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\small,
+    aboveskip=0.5mm,
+    belowskip=0.5mm,
+    columns=flexible,
+    breakatwhitespace=false,
+    breaklines=true,
+    captionpos=b,
+    keepspaces=true,
+    numbers=left,
+    numbersep=7pt,
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    tabsize=2
+}
+
+\lstset{style=mystyle1}
+
+\newfloat{figure}{htbp}{lof}[section]
+\floatname{figure}{Figure}
