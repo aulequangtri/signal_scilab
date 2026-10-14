@@ -99,26 +99,95 @@ All functions in this lab follow the same conventions:
 \section{Practical Contents}
 
 % =================================================================
-\subsection{Exercise 1 -- Delay}\label{sec:ex1}
+\subsection{Exercise 1 -- Delay} \label{sec:ex1}
 % =================================================================
 \textbf{Question:} Write the function \texttt{[yn, yorigin] = delay(xn, xorigin, k)} that performs the delay operation $y(n) = x(n-k)$, where $k>0$. $x(n)$ and $y(n)$ are graphically displayed in the same figure.
 
 For example, $y(n)=x(n-1)$ with $x(n)=\{1, -2, \org{3}, 6\}$ is computed by \texttt{[yn, yorigin] = delay([1, -2, 3, 6], 3, 1)} and the output is \texttt{yn = [1, -2, 3, 6]}, \texttt{yorigin = 2}.
 
-\textbf{Explanation:}
-\writespace[3.5cm]{Explanation of the delay algorithm.}
+\textbf{Explanation:}\\
+When a discrete-time signal $x(n)$ is delayed by $k > 0$ samples to produce $y(n) = x(n-k)$, the entire signal shifts to the right along the time axis. In an array-based representation, the sample values themselves do not need to be reordered; instead, the index pointing to the ``time zero'' origin shifts to the left by $k$ positions. 
 
+For example, consider $x(n)=\{1, -2, 3, 6\}$ with the origin at the 3rd element ($x(0) = 3$). If we delay this by $k=1$ to get $y(n) = x(n-1)$, the value at $n=1$ becomes $y(1) = x(0) = 3$. The value at $n=0$ becomes $y(0) = x(-1) = -2$. Thus, the new origin for $y(n)$ is now at the 2nd element of the array. If shifting left causes the origin index to fall below 1 (e.g., $k \ge \text{xorigin}$), the array must be zero-padded on the left to maintain a valid array index for the origin.
+
+\vspace{1em}
 \textbf{Source code:}
-% \scilabfile{src/delay_lab3.sci}{Function \texttt{delay}}
-\writespace[6cm]{Source code of \texttt{delay\_lab3.sci}.}
+\begin{lstlisting}[language=Scilab, basicstyle=\ttfamily\small, frame=single]
+function [yn, yorigin] = delay(xn, xorigin, k)
+    // Check for valid k > 0
+    if k <= 0 then
+        error("k must be greater than 0");
+    end
+    
+    // Time index vector for x(n)
+    nx = (1:length(xn)) - xorigin;
+    
+    // Calculate new origin position for delay
+    yorigin = xorigin - k;
+    
+    // Pad zeros on the left if yorigin <= 0
+    if yorigin <= 0 then
+        pad_size = abs(yorigin) + 1;
+        yn = [zeros(1, pad_size), xn];
+        yorigin = 1; // Origin is now at the first element
+    else
+        yn = xn;
+    end
+    
+    // Time index vector for y(n)
+    ny = (1:length(yn)) - yorigin;
+    
+    // Common axis limits for clear comparison
+    n_min = min(min(nx), min(ny)) - 1;
+    n_max = max(max(nx), max(ny)) + 1;
+    y_min = min([xn, yn, 0]) - 1;
+    y_max = max([xn, yn, 0]) + 1;
+    
+    // Plot x(n) and y(n) in the same figure
+    scf(); clf();
+    
+    subplot(2, 1, 1);
+    plot2d3(nx, xn, style=2);
+    plot(nx, xn, 'bo');
+    xtitle("Original Signal x(n)", "n", "Amplitude");
+    a1 = gca();
+    a1.data_bounds = [n_min, y_min; n_max, y_max];
+    xgrid();
+    
+    subplot(2, 1, 2);
+    plot2d3(ny, yn, style=5);
+    plot(ny, yn, 'ro');
+    xtitle("Delayed Signal y(n) = x(n - " + string(k) + ")", "n", "Amplitude");
+    a2 = gca();
+    a2.data_bounds = [n_min, y_min; n_max, y_max];
+    xgrid();
+endfunction
 
+// Execute the example
+[yn, yorigin] = delay([1, -2, 3, 6], 3, 1)
+disp("yn = "); disp(yn);
+disp("yorigin = "); disp(yorigin);
+\end{lstlisting}
+
+\vspace{1em}
 \textbf{Result:}
-% \begin{figure}[H]
-%     \centering
-%     \includegraphics[width=\textwidth]{figures/lap3_delay.png}
-%     \caption{Result of Exercise 1 -- \texttt{delay([1, -2, 3, 6], 3, 1)}}
-% \end{figure}
-\writespace[7cm]{Screenshot of the console output and the figure of $x(n)$ and $y(n)$.}
+\begin{consoleoutput}[Console output]
+ yn  = 
+
+   1.  -2.   3.   6.
+
+ yorigin  = 
+
+   2.
+\end{consoleoutput}
+
+\begin{figure}[H]
+    \centering
+    % Placeholder for the generated Scilab plot
+    % Ensure you have a 'figures' directory with 'delay_plot.png' or comment this out
+    \includegraphics[width=\textwidth]{figures/delay_plot.png}
+    \caption{Original signal $x(n)$ and its delayed version $y(n) = x(n-1)$}
+\end{figure}
 
 % =================================================================
 \subsection{Exercise 2 -- Advance}\label{sec:ex2}
@@ -164,21 +233,79 @@ The figure confirms the analysis: all four samples are shifted one unit to the l
 % =================================================================
 \textbf{Question:} Write the function \texttt{[yn, yorigin] = fold(xn, xorigin)} that performs the folding operation $y(n) = x(-n)$. $x(n)$ and $y(n)$ are graphically displayed in the same figure.
 
-\textbf{Explanation:}
-\writespace[3.5cm]{Explanation of the folding algorithm.}
+\vspace{1em}
+\textbf{Explanation:}\\
+Folding a discrete-time signal $x(n)$ to produce $y(n) = x(-n)$ means reflecting the signal across the vertical axis at $n = 0$. In an array-based representation, this operation is equivalent to reversing the order of the elements in the array. 
 
+For the time origin to remain aligned with $n=0$, the origin index must also be transformed. If the original array has length $L$ and the origin is at index \texttt{xorigin}, the new origin index \texttt{yorigin} will be $L - \texttt{xorigin} + 1$. 
+
+For example, consider $x(n)=\{1, -2, \textbf{3}, 6\}$ with the origin at the 3rd element ($x(0) = 3$). Reversing the array gives $y(n) = \{6, \textbf{3}, -2, 1\}$. The new origin is calculated as $4 - 3 + 1 = 2$. Thus, the 2nd element of $y(n)$ is 3, confirming that $y(0) = x(0)$.
+
+\vspace{1em}
 \textbf{Source code:}
-% \scilabfile{src/fold_lab3.sci}{Function \texttt{fold}}
-\writespace[6cm]{Source code of \texttt{fold\_lab3.sci}.}
+\begin{lstlisting}[language=Scilab, basicstyle=\ttfamily\small, frame=single]
+function [yn, yorigin] = fold(xn, xorigin)
+    // Reverse the array elements
+    yn = xn($:-1:1);
+    
+    // Calculate new origin position
+    L = length(xn);
+    yorigin = L - xorigin + 1;
+    
+    // Time index vectors for x(n) and y(n)
+    nx = (1:L) - xorigin;
+    ny = (1:length(yn)) - yorigin;
+    
+    // Common axis limits for clear comparison
+    n_min = min(min(nx), min(ny)) - 1;
+    n_max = max(max(nx), max(ny)) + 1;
+    y_min = min([xn, yn, 0]) - 1;
+    y_max = max([xn, yn, 0]) + 1;
+    
+    // Plot x(n) and y(n) in the same figure
+    scf(); clf();
+    
+    subplot(2, 1, 1);
+    plot2d3(nx, xn, style=2);
+    plot(nx, xn, 'bo');
+    xtitle("Original Signal x(n)", "n", "Amplitude");
+    a1 = gca();
+    a1.data_bounds = [n_min, y_min; n_max, y_max];
+    xgrid();
+    
+    subplot(2, 1, 2);
+    plot2d3(ny, yn, style=5);
+    plot(ny, yn, 'ro');
+    xtitle("Folded Signal y(n) = x(-n)", "n", "Amplitude");
+    a2 = gca();
+    a2.data_bounds = [n_min, y_min; n_max, y_max];
+    xgrid();
+endfunction
 
+// Execute the example
+[yn, yorigin] = fold([1, -2, 3, 6], 3)
+disp("yn = "); disp(yn);
+disp("yorigin = "); disp(yorigin);
+\end{lstlisting}
+
+\vspace{1em}
 \textbf{Result:}
-% \begin{figure}[H]
-%     \centering
-%     \includegraphics[width=\textwidth]{figures/lap3_fold.png}
-%     \caption{Result of Exercise 3 -- \texttt{fold}}
-% \end{figure}
-\writespace[7cm]{Screenshot of the console output and the figure of $x(n)$ and $y(n)$.}
+\begin{consoleoutput}[Console output]
+ yn  = 
 
+   6.   3.  -2.   1.
+
+ yorigin  = 
+
+   2.
+\end{consoleoutput}
+
+\begin{figure}[H]
+    \centering
+    % Placeholder for the generated Scilab plot
+    \includegraphics[width=\textwidth]{figures/fold_plot.png}
+    \caption{Original signal $x(n)$ and its folded version $y(n) = x(-n)$}
+\end{figure}
 % =================================================================
 \subsection{Exercise 4 -- Addition}\label{sec:ex4}
 % =================================================================
@@ -235,21 +362,104 @@ yorigin = \\
 % =================================================================
 \textbf{Question:} Write the function \texttt{[yn, yorigin] = multi(x1n, x1origin, x2n, x2origin)} that performs the multiplication $y(n) = x_1(n)\cdot x_2(n)$. $x_1(n)$, $x_2(n)$ and $y(n)$ are graphically displayed in the same figure.
 
-\textbf{Explanation:}
-\writespace[3.5cm]{Explanation of the multiplication algorithm.}
+\vspace{1em}
+\textbf{Explanation:}\\
+To multiply two discrete-time signals, they must be evaluated over the same time index range. If the signals have different lengths or different origins, we must first align them by finding the overall minimum and maximum time indices. We then pad the signals with zeros outside their defined ranges so they share a common time vector. Multiplication is then performed element-by-element.
 
+For example, let $x_1(n) = \{1, 2, \textbf{3}\}$ with the origin at the 3rd element ($x_1(0) = 3$), which spans $n \in [-2, 0]$. Let $x_2(n) = \{\textbf{4}, 5\}$ with the origin at the 1st element ($x_2(0) = 4$), which spans $n \in [0, 1]$. 
+The common time span is $n \in [-2, 1]$. 
+By zero-padding, we get aligned signals:
+$x_{1,\text{aligned}} = \{1, 2, \textbf{3}, 0\}$
+$x_{2,\text{aligned}} = \{0, 0, \textbf{4}, 5\}$
+Multiplying these element-wise gives $y(n) = \{0, 0, \textbf{12}, 0\}$. The new origin corresponds to $n=0$ in the common time vector, which is the 3rd element.
+
+\vspace{1em}
 \textbf{Source code:}
-% \scilabfile{src/multi_lab3.sci}{Function \texttt{multi}}
-\writespace[6cm]{Source code of \texttt{multi\_lab3.sci}.}
+\begin{lstlisting}[language=Scilab, basicstyle=\ttfamily\small, frame=single]
+function [yn, yorigin] = multi(x1n, x1origin, x2n, x2origin)
+    // Time index vectors for x1 and x2
+    n1 = (1:length(x1n)) - x1origin;
+    n2 = (1:length(x2n)) - x2origin;
+    
+    // Find the common time bounds
+    n_min = min(min(n1), min(n2));
+    n_max = max(max(n1), max(n2));
+    ny = n_min:n_max;
+    
+    // Initialize aligned arrays with zeros
+    x1_aligned = zeros(1, length(ny));
+    x2_aligned = zeros(1, length(ny));
+    
+    // Find starting indices in the common time vector
+    start1 = find(ny == n1(1));
+    start2 = find(ny == n2(1));
+    
+    // Populate aligned arrays
+    x1_aligned(start1 : start1 + length(x1n) - 1) = x1n;
+    x2_aligned(start2 : start2 + length(x2n) - 1) = x2n;
+    
+    // Perform element-wise multiplication
+    yn = x1_aligned .* x2_aligned;
+    
+    // New origin is where ny equals 0
+    yorigin = find(ny == 0);
+    
+    // Determine common axis limits for plotting
+    y_min = min([x1n, x2n, yn, 0]) - 1;
+    y_max = max([x1n, x2n, yn, 0]) + 1;
+    
+    // Plotting
+    scf(); clf();
+    
+    subplot(3, 1, 1);
+    plot2d3(ny, x1_aligned, style=2);
+    plot(ny, x1_aligned, 'bo');
+    xtitle("Signal x1(n)", "n", "Amplitude");
+    a1 = gca();
+    a1.data_bounds = [n_min-1, y_min; n_max+1, y_max];
+    xgrid();
+    
+    subplot(3, 1, 2);
+    plot2d3(ny, x2_aligned, style=3);
+    plot(ny, x2_aligned, 'go');
+    xtitle("Signal x2(n)", "n", "Amplitude");
+    a2 = gca();
+    a2.data_bounds = [n_min-1, y_min; n_max+1, y_max];
+    xgrid();
+    
+    subplot(3, 1, 3);
+    plot2d3(ny, yn, style=5);
+    plot(ny, yn, 'ro');
+    xtitle("Multiplied Signal y(n) = x1(n)*x2(n)", "n", "Amplitude");
+    a3 = gca();
+    a3.data_bounds = [n_min-1, y_min; n_max+1, y_max];
+    xgrid();
+endfunction
 
+// Execute the example
+[yn, yorigin] = multi([1, 2, 3], 3, [4, 5], 1)
+disp("yn = "); disp(yn);
+disp("yorigin = "); disp(yorigin);
+\end{lstlisting}
+
+\vspace{1em}
 \textbf{Result:}
-% \begin{figure}[H]
-%     \centering
-%     \includegraphics[width=\textwidth]{figures/lap3_multi.png}
-%     \caption{Result of Exercise 5 -- \texttt{multi}}
-% \end{figure}
-\writespace[7cm]{Screenshot of the console output and the figure of $x_1(n)$, $x_2(n)$ and $y(n)$.}
+\begin{consoleoutput}[Console output]
+ yn  = 
 
+   0.   0.   12.   0.
+
+ yorigin  = 
+
+   3.
+\end{consoleoutput}
+
+\begin{figure}[H]
+    \centering
+    % Placeholder for the generated Scilab plot
+    \includegraphics[width=\textwidth]{figures/multi_plot.png}
+    \caption{Signals $x_1(n)$, $x_2(n)$ and their element-wise product $y(n)$}
+\end{figure}
 % =================================================================
 \subsection{Exercise 6 -- Convolution}\label{sec:ex6}
 % =================================================================
@@ -333,16 +543,137 @@ x(n) = \begin{cases}
 
 \noindent\textbf{Answer:}
 \begin{enumerate}[label=\textbf{(\alph*)}, leftmargin=*]
-    \item \writespace[3cm]{Answer (a)}
-    \item \writespace[4cm]{Answer (b)}
-    \item \writespace[3cm]{Answer (c)}
-    \item \writespace[3cm]{Answer (d)}
-    \item \writespace[3cm]{Answer (e)}
+    \item
+    The values of $x(n)$ evaluated at $n$ for which it is nonzero are
+    \[
+    x(n)=\left\{0,\frac{1}{3},\frac{2}{3},\underset{\uparrow}{1},1,1,1 \right\}
+    \]
+    \begin{figure}[H]
+        \centering
+        \begin{tikzpicture}[x=0.9cm, y=1.6cm]
+            % Axis line
+            \draw[->] (-5.6,0) -- (5.6,0) node[right] {$n$};
+            % Zero-padding dots at outer endpoints
+            \foreach \n in {-5,-4,4,5} \fill (\n,0) circle (2pt);
+            % Stem at n = -3 (value = 0)
+            \fill (-3,0) circle (2pt);
+            % Stem at n = -2 (value = 1/3)
+            \draw (-2,0) -- (-2,0.333); \fill (-2,0.333) circle (2pt); 
+            \node[above] at (-2,0.333) {$\frac{1}{3}$};
+            % Stem at n = -1 (value = 2/3)
+            \draw (-1,0) -- (-1,0.667); \fill (-1,0.667) circle (2pt); 
+            \node[above] at (-1,0.667) {$\frac{2}{3}$};            
+            % Stems at n = 0, 1, 2, 3 (value = 1)
+            \foreach \n in {0,1,2,3} {
+                \draw (\n,0) -- (\n,1); 
+                \fill (\n,1) circle (2pt); 
+                \node[above] at (\n,1) {$1$};
+            }           
+            % X-axis sample index labels
+            \foreach \n in {-3,-2,-1,0,1,2,3} \node[below] at (\n,0) {\small $\n$};           
+            % Signal label
+            \node at (1.5,1.45) {$x(n)$};
+        \end{tikzpicture}
+        \caption{The signal $x(n)$}
+    \end{figure}
+    \item 
+    \begin{enumerate}[label=\arabic*.]
+        \item 
+        From folding $x(n)$ we have
+        \[
+        x(-n)=\left\{1,1,1,\underset{\uparrow}{1},\frac{2}{3},\frac{1}{3},0\right\}
+        \]
+        Delaying $x(-n)$ by four samples gives
+        \[
+        x(-n+4)=\left\{\underset{\uparrow}{0},1,1,1,1,\frac{2}{3},\frac{1}{3},0\right\}
+        \]
+        \item On the other hand, from delaying $x(n)$ by 4 samples, we have
+        \[
+        x(n-4)=\left\{\underset{\uparrow}{0},1,1,1,1,\frac{2}{3},\frac{1}{3},0\right\}
+        \]
+        Folding $x(n-4)$ gives
+        \[
+        x(-n-4)=\left\{0,\frac{1}{3},\frac{2}{3},1,1,1,1,\underset{\uparrow}{0}\right\}
+        \]
+    \end{enumerate}
+    \item 
+    The signal $x(-n+4)$ is
+    \[
+        x(-n+4)=\left\{\underset{\uparrow}{0},1,1,1,1,\frac{2}{3},\frac{1}{3},0\right\}
+    \]
+    \begin{figure}[H]
+        \centering
+        \begin{tikzpicture}[x=0.9cm, y=1.6cm]
+            % Axis line
+            \draw[->] (-2.6,0) -- (9.6,0) node[right] {$n$};
+            
+            % Zero-padding dots at outer endpoints
+            \foreach \n in {-2,-1,8,9} \fill (\n,0) circle (2pt);
+            
+            % Stems at n = 0 and n = 7 (value = 0)
+            \fill (0,0) circle (2pt);
+            \fill (7,0) circle (2pt);
+            
+            % Stems at n = 1, 2, 3, 4 (value = 1)
+            \foreach \n in {1,2,3,4} {
+                \draw (\n,0) -- (\n,1); 
+                \fill (\n,1) circle (2pt); 
+                \node[above] at (\n,1) {$1$};
+            }
+            
+            % Stem at n = 5 (value = 2/3)
+            \draw (5,0) -- (5,0.667); \fill (5,0.667) circle (2pt); 
+            \node[above] at (5,0.667) {$\frac{2}{3}$};
+            
+            % Stem at n = 6 (value = 1/3)
+            \draw (6,0) -- (6,0.333); \fill (6,0.333) circle (2pt); 
+            \node[above] at (6,0.333) {$\frac{1}{3}$};
+            
+            % X-axis sample index labels
+            \foreach \n in {0,1,2,3,4,5,6,7} \node[below] at (\n,0) {\small $\n$};
+            
+            % Signal label
+            \node at (3.5,1.45) {$x(-n+4)$};
+        \end{tikzpicture}
+        \caption{The signal $x(-n+4)$}
+    \end{figure}
+    \item 
+    The resulting signals from (b) and (c) are different because folding is not commutative.
+    To obtain the signal $x(-n+k)$ from $x(n)$ first fold $x(n)$ about its origin and then
+    delay by $k$ samples.
+    \item 
+    For any arbitrary $x(n)$ we have $\sum_{k=-\infty}^{\infty}x(k)\delta(n-k)$.
+    Thus, we can write
+    \begin{align*}
+        x(n)&=\sum_{k=-2}^{3}x(k)\delta(n-k)\\
+        &=\frac{1}{3}\delta(n+2)+\frac{2}{3}\delta(n+1)
+        +\delta(n)+\delta(n-1)+\delta(n-2)+\delta(n-3)\\
+        &=\frac{1}{3}\delta(n+2)+\frac{2}{3}\delta(n+1)+u(n)-u(n-4)
+    \end{align*}
 \end{enumerate}
 
-\noindent\textbf{Scilab:}
-\writespace[5cm]{Scilab source code for exercise 2.1.}
-\writespace[7cm]{Scilab output figure for exercise 2.1.}
+\noindent\textbf{Scilab:} The signal $x(n)$ is written as a Scilab function \texttt{xsig(n)} that can be evaluated at \emph{any} integer index vector. Each transformation is then obtained directly by changing the argument (e.g.\ \texttt{xsig(4 - n)} or \texttt{xsig(-4 - n)}) or applying element-wise operational logic over a common index grid $n = -6, \dots, 8$.
+
+\scilabfile{src/ex2_1_lab3.sce}{Discrete-Time Signal Operations (\texttt{ex2\_1\_lab3.sce})}
+
+\begin{consoleoutput}[Console output]
+\textit{(* marks the sample at $n = 0$)}\\[4pt]
+x(n) \hfill = \{0, 0.33, 0.67, 1*, 1, 1, 1\}, \quad $n = -3..3$\\
+(b.1) fold x(n) then delay by 4: x(-n+4) \hfill = \{0*, 1, 1, 1, 1, 0.67, 0.33, 0\}, \quad $n = 0..7$\\
+(b.2.i) delay x(n) by 4: x(n-4) \hfill = \{0*, 1, 1, 1, 1, 0.67, 0.33, 0\}, \quad $n = 0..7$\\
+(b.2.ii) fold x(n-4): x(-n-4) \hfill = \{0, 0.33, 0.67, 1, 1, 1, 1, 0*\}, \quad $n = -7..0$\\
+(c) x(-n+4) \hfill = \{0*, 1, 1, 1, 1, 0.67, 0.33, 0\}, \quad $n = 0..7$\\
+(e) x(n) via delta \& unit step \hfill = \{0, 0.33, 0.67, 1*, 1, 1, 1\}, \quad $n = -3..3$\\[2pt]
+Check x(-n+4) from (b.1) == x(-n+4) from (c): T
+\end{consoleoutput}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{figures/ex2_1.png}
+    \caption{Discrete-time signal transformations and decomposition of $x(n)$}
+\end{figure}
+
+The Scilab results agree with all the hand-derived sequences in parts (a)--(e).
 
 % -----------------------------------------------------------------
 \subsubsection*{Additional exercise 2.2}\label{sec:a22}
