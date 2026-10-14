@@ -1,0 +1,50 @@
+
+----- Exercise 2.2 (* marks n = 0) -----
+x(n)             = {1, 1*, 1, 1, 0.5, 0.5},   n = -1..4
+(a) x(n-2)       = {0*, 1, 1, 1, 1, 0.5, 0.5},   n = 0..6
+(b) x(4-n)       = {0.5*, 0.5, 1, 1, 1, 1},   n = 0..5
+(c) x(n+2)       = {1, 1, 1, 1*, 0.5, 0.5},   n = -3..2
+(d) x(n)u(2-n)   = {1, 1*, 1, 1},   n = -1..2
+(e) x(n-1)d(n-3) = {0*, 0, 0, 1},   n = 0..3
+(f) x(n^2)       = {0.5, 1, 1*, 1, 0.5},   n = -2..2
+(g) xe(n)        = {0.25, 0.25, 0.5, 1, 1*, 1, 0.5, 0.25, 0.25},   n = -4..4
+(h) xo(n)        = {-0.25, -0.25, -0.5, 0, 0*, 0, 0.5, 0.25, 0.25},   n = -4..4
+Check xe(n) + xo(n) = x(n): T
+Warning : redefining function: stem                    . Use funcprot(0) to avoid this message
+
+----- Exercise 2.4 -----
+n       = -2  -1  0  1  2
+x(n)    = 2  3  4  5  6
+x(-n)   = 6  5  4  3  2
+xe(n)   = 4  4  4  4  4
+xo(n)   = -2  -1  0  1  2
+yorigin = 3
+xe even  (xe(n) =  xe(-n)) : T
+xo odd   (xo(n) = -xo(-n)) : T
+xe + xo == x               : T
+Warning : redefining function: stem                    . Use funcprot(0) to avoid this message
+Warning : redefining function: show                    . Use funcprot(0) to avoid this message
+
+----- System 1: y(n) = x(n^2) -----
+  x(n)           = {1*, 1, 1, 1},   n = 0..3
+  y(n)           = {1, 1*, 1},   n = -1..1
+  y(n-2)         = {0*, 1, 1, 1},   n = 0..3
+  x2(n)=x(n-2)   = {0*, 0, 1, 1, 1, 1},   n = 0..5
+  y2(n)=T[x2]    = {1, 0, 0*, 0, 1},   n = -2..2
+  => y2(n) <> y(n-2)  ==> the system is TIME-VARIANT
+
+----- System 2: y(n) = x(n) - x(n-1) -----
+  x(n)           = {1*, 1, 1, 1},   n = 0..3
+  y(n)           = {1*, 0, 0, 0, -1},   n = 0..4
+  y(n-2)         = {0*, 0, 1, 0, 0, 0, -1},   n = 0..6
+  x2(n)=x(n-2)   = {0*, 0, 1, 1, 1, 1},   n = 0..5
+  y2(n)=T[x2]    = {0*, 0, 1, 0, 0, 0, -1},   n = 0..6
+  => y2(n) = y(n-2) for this input (consistent with time-invariance)
+
+----- System 3: y(n) = n x(n) -----
+  x(n)           = {1*, 1, 1, 1},   n = 0..3
+  y(n)           = {0*, 1, 2, 3},   n = 0..3
+  y(n-2)         = {0*, 0, 0, 1, 2, 3},   n = 0..5
+  x2(n)=x(n-2)   = {0*, 0, 1, 1, 1, 1},   n = 0..5
+  y2(n)=T[x2]    = {0*, 0, 2, 3, 4, 5},   n = 0..5
+  => y2(n) <> y(n-2)  ==> the system is TIME-VARIANT
