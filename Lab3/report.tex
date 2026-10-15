@@ -110,64 +110,6 @@ When a discrete-time signal $x(n)$ is delayed by $k > 0$ samples to produce $y(n
 
 For example, consider $x(n)=\{1, -2, 3, 6\}$ with the origin at the 3rd element ($x(0) = 3$). If we delay this by $k=1$ to get $y(n) = x(n-1)$, the value at $n=1$ becomes $y(1) = x(0) = 3$. The value at $n=0$ becomes $y(0) = x(-1) = -2$. Thus, the new origin for $y(n)$ is now at the 2nd element of the array. If shifting left causes the origin index to fall below 1 (e.g., $k \ge \text{xorigin}$), the array must be zero-padded on the left to maintain a valid array index for the origin.
 
-\vspace{1em}
-\textbf{Source code:}
-\begin{lstlisting}[language=Scilab, basicstyle=\ttfamily\small, frame=single]
-function [yn, yorigin] = delay(xn, xorigin, k)
-    // Check for valid k > 0
-    if k <= 0 then
-        error("k must be greater than 0");
-    end
-    
-    // Time index vector for x(n)
-    nx = (1:length(xn)) - xorigin;
-    
-    // Calculate new origin position for delay
-    yorigin = xorigin - k;
-    
-    // Pad zeros on the left if yorigin <= 0
-    if yorigin <= 0 then
-        pad_size = abs(yorigin) + 1;
-        yn = [zeros(1, pad_size), xn];
-        yorigin = 1; // Origin is now at the first element
-    else
-        yn = xn;
-    end
-    
-    // Time index vector for y(n)
-    ny = (1:length(yn)) - yorigin;
-    
-    // Common axis limits for clear comparison
-    n_min = min(min(nx), min(ny)) - 1;
-    n_max = max(max(nx), max(ny)) + 1;
-    y_min = min([xn, yn, 0]) - 1;
-    y_max = max([xn, yn, 0]) + 1;
-    
-    // Plot x(n) and y(n) in the same figure
-    scf(); clf();
-    
-    subplot(2, 1, 1);
-    plot2d3(nx, xn, style=2);
-    plot(nx, xn, 'bo');
-    xtitle("Original Signal x(n)", "n", "Amplitude");
-    a1 = gca();
-    a1.data_bounds = [n_min, y_min; n_max, y_max];
-    xgrid();
-    
-    subplot(2, 1, 2);
-    plot2d3(ny, yn, style=5);
-    plot(ny, yn, 'ro');
-    xtitle("Delayed Signal y(n) = x(n - " + string(k) + ")", "n", "Amplitude");
-    a2 = gca();
-    a2.data_bounds = [n_min, y_min; n_max, y_max];
-    xgrid();
-endfunction
-
-// Execute the example
-[yn, yorigin] = delay([1, -2, 3, 6], 3, 1)
-disp("yn = "); disp(yn);
-disp("yorigin = "); disp(yorigin);
-\end{lstlisting}
 
 \vspace{1em}
 \textbf{Result:}
@@ -210,8 +152,6 @@ For the example $x(n) = \{1, -2, \org{3}, 6\}$ (\texttt{xorigin = 3}) and $k = 1
 \end{equation}
 Check: $y(0) = x(1) = 6$ and $y(-3) = x(-2) = 1$. So the whole sequence now occupies $-3 \le n \le 0$, one sample to the left of the original $-2 \le n \le 1$.
 
-\textbf{Source code:}
-\scilabfile{src/advance_lab3.sci}{Function \texttt{advance} (\texttt{advance\_lab3.sci})}
 
 \textbf{Result:}
 \begin{consoleoutput}[Console output]
@@ -239,54 +179,8 @@ Folding a discrete-time signal $x(n)$ to produce $y(n) = x(-n)$ means reflecting
 
 For the time origin to remain aligned with $n=0$, the origin index must also be transformed. If the original array has length $L$ and the origin is at index \texttt{xorigin}, the new origin index \texttt{yorigin} will be $L - \texttt{xorigin} + 1$. 
 
-For example, consider $x(n)=\{1, -2, \textbf{3}, 6\}$ with the origin at the 3rd element ($x(0) = 3$). Reversing the array gives $y(n) = \{6, \textbf{3}, -2, 1\}$. The new origin is calculated as $4 - 3 + 1 = 2$. Thus, the 2nd element of $y(n)$ is 3, confirming that $y(0) = x(0)$.
+For example, consider $x(n)=\{1, -2, \org{3}, 6\}$ with the origin at the 3rd element ($x(0) = 3$). Reversing the array gives $y(n) = \{6, \org{3}, -2, 1\}$. The new origin is calculated as $4 - 3 + 1 = 2$. Thus, the 2nd element of $y(n)$ is 3, confirming that $y(0) = x(0)$.
 
-\vspace{1em}
-\textbf{Source code:}
-\begin{lstlisting}[language=Scilab, basicstyle=\ttfamily\small, frame=single]
-function [yn, yorigin] = fold(xn, xorigin)
-    // Reverse the array elements
-    yn = xn($:-1:1);
-    
-    // Calculate new origin position
-    L = length(xn);
-    yorigin = L - xorigin + 1;
-    
-    // Time index vectors for x(n) and y(n)
-    nx = (1:L) - xorigin;
-    ny = (1:length(yn)) - yorigin;
-    
-    // Common axis limits for clear comparison
-    n_min = min(min(nx), min(ny)) - 1;
-    n_max = max(max(nx), max(ny)) + 1;
-    y_min = min([xn, yn, 0]) - 1;
-    y_max = max([xn, yn, 0]) + 1;
-    
-    // Plot x(n) and y(n) in the same figure
-    scf(); clf();
-    
-    subplot(2, 1, 1);
-    plot2d3(nx, xn, style=2);
-    plot(nx, xn, 'bo');
-    xtitle("Original Signal x(n)", "n", "Amplitude");
-    a1 = gca();
-    a1.data_bounds = [n_min, y_min; n_max, y_max];
-    xgrid();
-    
-    subplot(2, 1, 2);
-    plot2d3(ny, yn, style=5);
-    plot(ny, yn, 'ro');
-    xtitle("Folded Signal y(n) = x(-n)", "n", "Amplitude");
-    a2 = gca();
-    a2.data_bounds = [n_min, y_min; n_max, y_max];
-    xgrid();
-endfunction
-
-// Execute the example
-[yn, yorigin] = fold([1, -2, 3, 6], 3)
-disp("yn = "); disp(yn);
-disp("yorigin = "); disp(yorigin);
-\end{lstlisting}
 
 \vspace{1em}
 \textbf{Result:}
@@ -340,8 +234,6 @@ For the example, $n_1 \in [0, 3]$ and $n_2 \in [-1, 2]$, so the common range is 
 \end{equation}
 which matches the expected output given in the assignment.
 
-\textbf{Source code:}
-\scilabfile{src/add_lap3.sci}{Function \texttt{add} (\texttt{add\_lap3.sci})}
 
 \textbf{Result:}
 \begin{consoleoutput}[Console output]
@@ -366,81 +258,12 @@ yorigin = \\
 \textbf{Explanation:}\\
 To multiply two discrete-time signals, they must be evaluated over the same time index range. If the signals have different lengths or different origins, we must first align them by finding the overall minimum and maximum time indices. We then pad the signals with zeros outside their defined ranges so they share a common time vector. Multiplication is then performed element-by-element.
 
-For example, let $x_1(n) = \{1, 2, \textbf{3}\}$ with the origin at the 3rd element ($x_1(0) = 3$), which spans $n \in [-2, 0]$. Let $x_2(n) = \{\textbf{4}, 5\}$ with the origin at the 1st element ($x_2(0) = 4$), which spans $n \in [0, 1]$. 
+For example, let $x_1(n) = \{1, 2, \org{3}\}$ with the origin at the 3rd element ($x_1(0) = 3$), which spans $n \in [-2, 0]$. Let $x_2(n) = \{\org{4}, 5\}$ with the origin at the 1st element ($x_2(0) = 4$), which spans $n \in [0, 1]$. 
 The common time span is $n \in [-2, 1]$. 
 By zero-padding, we get aligned signals:
-$x_{1,\text{aligned}} = \{1, 2, \textbf{3}, 0\}$
-$x_{2,\text{aligned}} = \{0, 0, \textbf{4}, 5\}$
-Multiplying these element-wise gives $y(n) = \{0, 0, \textbf{12}, 0\}$. The new origin corresponds to $n=0$ in the common time vector, which is the 3rd element.
+\[ x_{1,\text{aligned}} = \{1, 2, \org{3}, 0\}, \qquad x_{2,\text{aligned}} = \{0, 0, \org{4}, 5\} \]
+Multiplying these element-wise gives $y(n) = \{0, 0, \org{12}, 0\}$. The new origin corresponds to $n=0$ in the common time vector, which is the 3rd element.
 
-\vspace{1em}
-\textbf{Source code:}
-\begin{lstlisting}[language=Scilab, basicstyle=\ttfamily\small, frame=single]
-function [yn, yorigin] = multi(x1n, x1origin, x2n, x2origin)
-    // Time index vectors for x1 and x2
-    n1 = (1:length(x1n)) - x1origin;
-    n2 = (1:length(x2n)) - x2origin;
-    
-    // Find the common time bounds
-    n_min = min(min(n1), min(n2));
-    n_max = max(max(n1), max(n2));
-    ny = n_min:n_max;
-    
-    // Initialize aligned arrays with zeros
-    x1_aligned = zeros(1, length(ny));
-    x2_aligned = zeros(1, length(ny));
-    
-    // Find starting indices in the common time vector
-    start1 = find(ny == n1(1));
-    start2 = find(ny == n2(1));
-    
-    // Populate aligned arrays
-    x1_aligned(start1 : start1 + length(x1n) - 1) = x1n;
-    x2_aligned(start2 : start2 + length(x2n) - 1) = x2n;
-    
-    // Perform element-wise multiplication
-    yn = x1_aligned .* x2_aligned;
-    
-    // New origin is where ny equals 0
-    yorigin = find(ny == 0);
-    
-    // Determine common axis limits for plotting
-    y_min = min([x1n, x2n, yn, 0]) - 1;
-    y_max = max([x1n, x2n, yn, 0]) + 1;
-    
-    // Plotting
-    scf(); clf();
-    
-    subplot(3, 1, 1);
-    plot2d3(ny, x1_aligned, style=2);
-    plot(ny, x1_aligned, 'bo');
-    xtitle("Signal x1(n)", "n", "Amplitude");
-    a1 = gca();
-    a1.data_bounds = [n_min-1, y_min; n_max+1, y_max];
-    xgrid();
-    
-    subplot(3, 1, 2);
-    plot2d3(ny, x2_aligned, style=3);
-    plot(ny, x2_aligned, 'go');
-    xtitle("Signal x2(n)", "n", "Amplitude");
-    a2 = gca();
-    a2.data_bounds = [n_min-1, y_min; n_max+1, y_max];
-    xgrid();
-    
-    subplot(3, 1, 3);
-    plot2d3(ny, yn, style=5);
-    plot(ny, yn, 'ro');
-    xtitle("Multiplied Signal y(n) = x1(n)*x2(n)", "n", "Amplitude");
-    a3 = gca();
-    a3.data_bounds = [n_min-1, y_min; n_max+1, y_max];
-    xgrid();
-endfunction
-
-// Execute the example
-[yn, yorigin] = multi([1, 2, 3], 3, [4, 5], 1)
-disp("yn = "); disp(yn);
-disp("yorigin = "); disp(yorigin);
-\end{lstlisting}
 
 \vspace{1em}
 \textbf{Result:}
@@ -495,8 +318,6 @@ The output of an LTI system is the convolution sum of the input and the impulse 
     y(n) = \{1, \org{4}, 8, 8, 3, -2, -1\}, \qquad \texttt{yorigin} = 2 + 1 - 1 = 2 .
 \end{equation}
 
-\textbf{Source code:}
-\scilabfile{src/convolution_lap3.sci}{Function \texttt{convolution} (\texttt{convolution\_lap3.sci})}
 
 \textbf{Result:}
 \begin{consoleoutput}[Console output]
@@ -587,14 +408,15 @@ x(n) = \begin{cases}
         \[
         x(-n+4)=\left\{\underset{\uparrow}{0},1,1,1,1,\frac{2}{3},\frac{1}{3},0\right\}
         \]
-        \item On the other hand, from delaying $x(n)$ by 4 samples, we have
+        \item On the other hand, delaying $x(n)$ by 4 samples shifts the support from $[-3, 3]$ to $[1, 7]$:
         \[
-        x(n-4)=\left\{\underset{\uparrow}{0},1,1,1,1,\frac{2}{3},\frac{1}{3},0\right\}
+        x(n-4)=\left\{\underset{\uparrow}{0},0,\frac{1}{3},\frac{2}{3},1,1,1,1\right\}
         \]
-        Folding $x(n-4)$ gives
+        Folding $x(n-4)$ (replacing $n$ by $-n$) gives a signal with support $[-7, -1]$:
         \[
-        x(-n-4)=\left\{0,\frac{1}{3},\frac{2}{3},1,1,1,1,\underset{\uparrow}{0}\right\}
+        x(-n-4)=\left\{1,1,1,1,\frac{2}{3},\frac{1}{3},0,\underset{\uparrow}{0}\right\}
         \]
+        Check: $x(-n-4)$ at $n=-4$ equals $x(0)=1$ and at $n=-2$ equals $x(-2)=\frac{1}{3}$.
     \end{enumerate}
     \item 
     The signal $x(-n+4)$ is
@@ -638,11 +460,12 @@ x(n) = \begin{cases}
         \caption{The signal $x(-n+4)$}
     \end{figure}
     \item 
-    The resulting signals from (b) and (c) are different because folding is not commutative.
-    To obtain the signal $x(-n+k)$ from $x(n)$ first fold $x(n)$ about its origin and then
-    delay by $k$ samples.
+    The result of (b.1) is identical to (c), while the result of (b.2), $x(-n-4)$, is different. Hence folding and time-shifting do \emph{not} commute: the order of the two operations matters.
+    Rule: to obtain $x(-n+k)$ from $x(n)$ (with $k>0$), first fold $x(n)$ to get $x(-n)$ and then
+    delay the folded signal by $k$ samples, since $x(-(n-k)) = x(-n+k)$.
+    (Equivalently, first advance $x(n)$ by $k$ samples to get $x(n+k)$ and then fold.)
     \item 
-    For any arbitrary $x(n)$ we have $\sum_{k=-\infty}^{\infty}x(k)\delta(n-k)$.
+    Any signal can be written as $x(n) = \sum_{k=-\infty}^{\infty}x(k)\delta(n-k)$.
     Thus, we can write
     \begin{align*}
         x(n)&=\sum_{k=-2}^{3}x(k)\delta(n-k)\\
@@ -652,18 +475,17 @@ x(n) = \begin{cases}
     \end{align*}
 \end{enumerate}
 
-\noindent\textbf{Scilab:} The signal $x(n)$ is written as a Scilab function \texttt{xsig(n)} that can be evaluated at \emph{any} integer index vector. Each transformation is then obtained directly by changing the argument (e.g.\ \texttt{xsig(4 - n)} or \texttt{xsig(-4 - n)}) or applying element-wise operational logic over a common index grid $n = -6, \dots, 8$.
+\noindent\textbf{Scilab:} The signal $x(n)$ is written as a Scilab function \texttt{xsig(n)} that can be evaluated at \emph{any} integer index vector. Each transformation is then obtained directly by changing the argument (e.g.\ \texttt{xsig(4 - n)} or \texttt{xsig(-4 - n)}) or applying element-wise operational logic over a common index grid $n = -8, \dots, 8$.
 
-\scilabfile{src/ex2_1_lab3.sce}{Discrete-Time Signal Operations (\texttt{ex2\_1\_lab3.sce})}
 
 \begin{consoleoutput}[Console output]
-\textit{(* marks the sample at $n = 0$)}\\[4pt]
-x(n) \hfill = \{0, 0.33, 0.67, 1*, 1, 1, 1\}, \quad $n = -3..3$\\
-(b.1) fold x(n) then delay by 4: x(-n+4) \hfill = \{0*, 1, 1, 1, 1, 0.67, 0.33, 0\}, \quad $n = 0..7$\\
-(b.2.i) delay x(n) by 4: x(n-4) \hfill = \{0*, 1, 1, 1, 1, 0.67, 0.33, 0\}, \quad $n = 0..7$\\
-(b.2.ii) fold x(n-4): x(-n-4) \hfill = \{0, 0.33, 0.67, 1, 1, 1, 1, 0*\}, \quad $n = -7..0$\\
-(c) x(-n+4) \hfill = \{0*, 1, 1, 1, 1, 0.67, 0.33, 0\}, \quad $n = 0..7$\\
-(e) x(n) via delta \& unit step \hfill = \{0, 0.33, 0.67, 1*, 1, 1, 1\}, \quad $n = -3..3$\\[2pt]
+\textit{(* marks the sample at $n = 0$; leading/trailing zeros are not printed)}\\[4pt]
+x(n) \hfill = \{0.33, 0.67, 1*, 1, 1, 1\}, \quad $n = -2..3$\\
+(b.1) fold x(n) then delay by 4: x(-n+4) \hfill = \{0*, 1, 1, 1, 1, 0.67, 0.33\}, \quad $n = 0..6$\\
+(b.2.i) delay x(n) by 4: x(n-4) \hfill = \{0*, 0, 0.33, 0.67, 1, 1, 1, 1\}, \quad $n = 0..7$\\
+(b.2.ii) fold x(n-4): x(-n-4) \hfill = \{1, 1, 1, 1, 0.67, 0.33, 0, 0*\}, \quad $n = -7..0$\\
+(c) x(-n+4) \hfill = \{0*, 1, 1, 1, 1, 0.67, 0.33\}, \quad $n = 0..6$\\
+(e) x(n) via delta \& unit step \hfill = \{0.33, 0.67, 1*, 1, 1, 1\}, \quad $n = -2..3$\\[2pt]
 Check x(-n+4) from (b.1) == x(-n+4) from (c): T
 \end{consoleoutput}
 
@@ -739,7 +561,6 @@ x(n) = \{\dots, 0, 1, \org{1}, 1, 1, \tfrac{1}{2}, \tfrac{1}{2}, 0, \dots\}
 
 \noindent\textbf{Scilab:} The signal $x(n)$ is written as a Scilab function \texttt{xsig(n)} that can be evaluated at \emph{any} integer index vector. Each transformation is then obtained just by changing the argument, e.g.\ \texttt{xsig(4 - n)} or \texttt{xsig(n.\^{}2)}, over a common index grid $n = -6, \dots, 8$.
 
-\scilabfile{src/ex2_2_lab3.sce}{Additional exercise 2.2 (\texttt{ex2\_2\_lab3.sce})}
 
 \begin{consoleoutput}[Console output]
 \textit{(* marks the sample at $n = 0$)}\\[4pt]
@@ -810,7 +631,6 @@ $x_e(n)$ is symmetric about $n = 0$, $x_o(n)$ is anti-symmetric with $x_o(0)=0$,
 
 \noindent\textbf{Scilab:} The function \texttt{evenodd(xn, xorigin)} uses the same (vector, origin) convention as the lab functions. It places $x(n)$ on a symmetric grid $[-L, L]$, so folding is just reversing the vector (\texttt{xs(\$:-1:1)}).
 
-\scilabfile{src/ex2_4_lab3.sce}{Additional exercise 2.4 (\texttt{ex2\_4\_lab3.sce})}
 
 \begin{consoleoutput}[Console output]
 n \qquad\quad = -2 \quad -1 \quad 0 \quad 1 \quad 2\\
@@ -915,7 +735,6 @@ A system is \textbf{time invariant} if shifting the input by $k$ only shifts the
 
 \noindent\textbf{Scilab:} Each system is written as a function \texttt{T(f, n)} that receives the \emph{input signal as a function} \texttt{f} and returns the output at the indices \texttt{n}. This way, $y(n-2)$ is simply \texttt{T(xin, n-2)} and $y_2(n) = \mathcal{T}[x(n-2)]$ is \texttt{T(x2in, n)}. The function \texttt{check\_system} performs steps (1)--(6) for each system. Step (6) is plotted as the difference $y_2(n) - y(n-2)$: if it is identically zero, the shift of the input only shifts the output.
 
-\scilabfile{src/ex2_6_lab3.sce}{Additional exercise 2.6 (\texttt{ex2\_6\_lab3.sce})}
 
 \begin{consoleoutput}[Console output]
 \textit{(* marks the sample at $n = 0$)}\\[4pt]

@@ -1,5 +1,5 @@
 // ============================================================================
-// File: src/ex2_2_lab1.sce
+// File: src/ex2_1_lab3.sce
 // Description: Discrete-time signal operations and unit impulse/step decomposition
 // ============================================================================
 
@@ -120,4 +120,4 @@ plot2d3(n, x_e, 2); plot(n, x_e, 'ro');
 xtitle('(e) Expression via \delta(n) and u(n)', 'n', 'amplitude'); xgrid();
 
 // Export the figure (ensure 'figures' directory exists, or it will fail)
-// xs2png(gcf(), 'figures/ex2_2.png');
+// xs2png(gcf(), 'figures/ex2_1.png');
