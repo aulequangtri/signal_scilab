@@ -345,7 +345,7 @@ y(n) = \sum_{k=-\infty}^{\infty} h(k)x(n - k).
     Lx = length(x);
     Lh = length(h);
     Ly = Lx + Lh - 1;
-    \end{lstlisting}
+\end{lstlisting}
     The script to perform $y=x*h$ by folding and shifting is given below:
     \begin{lstlisting}[language=Scilab]
     // Initialize output vector y
@@ -366,13 +366,13 @@ y(n) = \sum_{k=-\infty}^{\infty} h(k)x(n - k).
     end
         
     disp("y(n) via Folding and Shifting:");
-    disp(y_fold);        
-    \end{lstlisting}
+    disp(y_fold);
+\end{lstlisting}
     Which returned
     \begin{lstlisting}[language=Scilab]
     "y(n) via Folding and Shifting:"
     1.   2.  -4.   0.   4.  -2.  -1.
-    \end{lstlisting}
+\end{lstlisting}
     The script to perform $y=x*h$ by using matrices is
     \begin{lstlisting}[language=Scilab]
     // Column 1 of H: h padded with zeros to length Ly
@@ -393,7 +393,7 @@ y(n) = \sum_{k=-\infty}^{\infty} h(k)x(n - k).
         
     disp("y(n) via Matrix Multiplication:");
     disp(y_matrix');
-    \end{lstlisting}
+\end{lstlisting}
     Whose result is
     \begin{lstlisting}[language=Scilab]
     "Convolution Matrix H:"
@@ -406,7 +406,7 @@ y(n) = \sum_{k=-\infty}^{\infty} h(k)x(n - k).
     0.   0.   0.   0.  -1.
     "y(n) via Matrix Multiplication:"
     1.   2.  -4.   0.   4.  -2.  -1.
-    \end{lstlisting}
+\end{lstlisting}
     The convolution results agree with the calculations in part 2 and 3.\\[0.5ex]
     Finally the plots of $x(n)$, $y(n)$ and their energies are illustrated in the figure below:
     \begin{figure}[H]
