@@ -144,15 +144,25 @@ All computational scripts and graphical outputs adhere to the following conventi
     x_1(n)=0.5^n u(n) \quad \text{and} \quad x_2(n)=0.4^n u(n)
 \end{equation*}
 where $u(n)$ is the unit step signal.\\[0.5ex]
-\par Let's take the z-Transform of $x_1(n)$ and $x_2(n)$, which are
-\begin{align*}
-    X_1(z) &= \sum_{n=-\infty}^{+\infty} \left[0.5^n u(n)\right]z^{-n}
-    = \sum_{n=0}^{+\infty} \left[0.5^n u(n)\right]z^{-n}
-    = 1 + 0.5z^{-1} + 0.5^2z^{-2} + \ldots\\
-    X_2(z) &= \sum_{n=-\infty}^{+\infty} \left[0.4^n u(n)\right]z^{-n}
-    = \sum_{n=0}^{+\infty} \left[0.4^n u(n)\right]z^{-n}
-    = 1 + 0.4z^{-1} + 0.4^2z^{-2} + \ldots
-\end{align*}
+\par Let's take the z-Transform of $x_1(n)$, which are
+\begin{equation*}
+    X_1(z) = \sum_{n=-\infty}^{+\infty} \left[0.5^n u(n)\right]z^{-n}
+    = \sum_{n=0}^{+\infty} \left(0.5z^{-1}\right)^n
+\end{equation*}
+This geometric series converges if and only if
+\begin{equation*}
+    |0.5z^{-1}|<1\Rightarrow |z|>0.5
+\end{equation*}
+So $\text{ROC}_1:|z|>0.5$. For $x_2(n)$ we have
+\begin{equation*}
+    X_2(z) = \sum_{n=-\infty}^{+\infty} \left[0.4^n u(n)\right]z^{-n}
+    = \sum_{n=0}^{+\infty} \left(0.4z^{-1}\right)^n
+\end{equation*}
+This geometric series converges if and only if
+\begin{equation*}
+    |0.4z^{-1}|<1\Rightarrow |z|>0.4
+\end{equation*}
+Thus $\text{ROC}_2:|z|>0.4$.\\[0.5ex]
 We have
 \begin{equation*}
     x(n) = x_1(n) + x_2(n)
@@ -160,8 +170,14 @@ We have
 then the z-Transform of $x(n)$ is
 \begin{align*}
     X(z) &= X_1(z) + X_2(z)\\
-    &= \left[1 + 0.5z^{-1} + 0.5^2z^{-2} + \ldots\right]+\left[1 + 0.4z^{-1} + 0.4^2z^{-2} + \ldots\right]\\
-&= 2 + 0.9z^{-1} + 0.41z^{-2} + 0.189z^{-3} + \ldots
+    &= \sum_{n=0}^{+\infty} \left(0.5z^{-1}\right)^n+\sum_{n=0}^{+\infty} \left(0.4z^{-1}\right)^n\\
+    &= \sum_{n=0}^{+\infty} \left[\left(0.5z^{-1}\right)^n+\left(0.4z^{-1}\right)^n\right].
+\end{align*}
+By linearity, we have
+\begin{align*}
+    \text{ROC} &= \text{ROC}_1 \cap \text{ROC}_2\\
+    &= \{z\; : \; |z|>0.5\}\cap\{z\; : \; |z|>0.4\}\\
+    &= \{z\; : \; |z|>0.5\}
 \end{align*}
 % =================================================================
 \subsection{Exercise 3}\label{sec:ex3}
