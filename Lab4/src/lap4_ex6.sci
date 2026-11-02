@@ -57,3 +57,4 @@ plot2d3(ny', (abs(y_fold).^2)', style=5);
 xlabel("n"); ylabel("|.|^2");
 title(msprintf("Signal Energies: Ex = %g, Ey = %g", Ex, Ey));
 legend(["|x(n)|^2"; "|y(n)|^2"], 1);
+

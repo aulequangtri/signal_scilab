@@ -318,6 +318,41 @@ Scilab provides both built-in functions in its standard library and external mod
     \item \texttt{mapsound}: Analyzes audio signals in the time-frequency domain and visualizes sound spectrograms.
 \end{itemize}
 
+\paragraph{ATOMS Audio Toolbox Installation via Bash:}
+External audio processing toolboxes (such as the Sound System Toolbox, \texttt{sound}, or \texttt{sndfile}) provide advanced audio I/O formats, real-time streaming, and acoustic DSP algorithms. Using Scilab's ATOMS package manager, these modules can be installed and verified headlessly via a Bash script interfacing with \texttt{scilab-cli}:
+
+\begin{lstlisting}[language=bash, caption={Bash script to install audio processing toolboxes via ATOMS}]
+#!/usr/bin/env bash
+# ==========================================================
+# Script: install_atoms_audio.sh
+# Description: Automated installation of Audio/Sound toolbox
+# ==========================================================
+
+# Check if scilab-cli is installed
+if ! command -v scilab-cli &> /dev/null; then
+    echo "Error: scilab-cli not found in system PATH."
+    exit 1
+fi
+
+echo "Updating ATOMS package catalog..."
+scilab-cli -nb -quit -e "atomsSystemUpdate();"
+
+echo "Installing Sound / Audio processing toolbox via ATOMS..."
+scilab-cli -nb -quit -e "atomsInstall('sound');"
+
+echo "Verifying installation and loading toolbox..."
+scilab-cli -nb -quit -e "if atomsIsLoaded('sound') then disp('Audio toolbox active'); else atomsLoad('sound'); disp('Loaded successfully'); end"
+
+echo "Audio toolbox installation finished!"
+\end{lstlisting}
+
+The equivalent interactive commands executed in the Scilab console are:
+\begin{lstlisting}[language=Scilab, caption={Scilab console commands for audio toolbox installation}]
+atomsSystemUpdate();       // Refresh package catalog
+atomsInstall("sound");     // Download and install sound module
+atomsLoad("sound");        // Load module into active workspace
+\end{lstlisting}
+
 \noindent\textbf{Demonstration Script:}
 To demonstrate audio processing without external file dependencies, a standard $440\text{ Hz}$ tone (musical note A4) is synthesized, attenuated with an exponential decay envelope, and plotted in the time domain:
 
@@ -378,26 +413,27 @@ Scilab provides the ATOMS (AuTOmatic Modules Management for Scilab) package repo
 
 \begin{lstlisting}[language=bash, caption={Bash script to install and load the IPCV toolbox via ATOMS}]
 #!/usr/bin/env bash
-# ==============================================================================
+# ==========================================================
 # Script: install_atoms_image.sh
-# Description: Automated installation of IPCV toolbox via Scilab CLI
-# ==============================================================================
+# Description: Automated installation of IPCV toolbox via CLI
+# ==========================================================
 
+# Check whether scilab-cli is installed
 if ! command -v scilab-cli &> /dev/null; then
-    echo "[ERROR] scilab-cli not found in system PATH."
+    echo "Error: scilab-cli not found in system PATH."
     exit 1
 fi
 
-echo "[INFO] Updating Scilab ATOMS repository metadata..."
+echo "Updating Scilab ATOMS repository metadata..."
 scilab-cli -nb -quit -e "atomsSystemUpdate();"
 
-echo "[INFO] Installing IPCV (Image Processing and Computer Vision) toolbox..."
+echo "Installing IPCV (Image Processing & Computer Vision)..."
 scilab-cli -nb -quit -e "atomsInstall('IPCV');"
 
-echo "[INFO] Verifying IPCV installation and auto-loading..."
-scilab-cli -nb -quit -e "if atomsIsLoaded('IPCV') then disp('IPCV is active'); else atomsLoad('IPCV'); disp('IPCV loaded successfully'); end"
+echo "Verifying IPCV installation and auto-loading..."
+scilab-cli -nb -quit -e "if atomsIsLoaded('IPCV') then disp('IPCV active'); else atomsLoad('IPCV'); disp('IPCV loaded successfully'); end"
 
-echo "[SUCCESS] Image processing toolbox installed and ready for use!"
+echo "Image processing toolbox installed and ready for use!"
 \end{lstlisting}
 Within the Scilab interactive terminal, the equivalent commands are:
 \begin{lstlisting}[language=Scilab, caption={Scilab console commands for ATOMS toolbox management}]
@@ -628,41 +664,6 @@ y(n) = \sum_{k=-\infty}^{\infty} h(k)x(n - k).
         \includegraphics[width=\textwidth]{figures/plot_and_energies.png}
         \caption{$x(n)$ and $y(n)$ with their energies respectively.}
     \end{figure}
-
-    \paragraph{ATOMS Signal Processing Setup and Headless Batch Execution via Bash:}
-    To run the discrete-time convolution analysis headlessly in server or automated grading environments, a Bash script is utilized to ensure required ATOMS signal modules are installed and execute the Scilab script in batch mode:
-
-\begin{lstlisting}[language=bash, caption={Bash script for ATOMS package setup and headless execution in Exercise 6}]
-#!/usr/bin/env bash
-# ==============================================================================
-# Script: setup_and_run_ex6.sh
-# Description: Automated ATOMS setup and batch execution of Exercise 6
-# ==============================================================================
-
-# Verify Scilab command-line executable exists
-if ! command -v scilab-cli &> /dev/null; then
-    echo "[ERROR] scilab-cli is not installed or not in system PATH."
-    exit 1
-fi
-
-# 1. Update ATOMS repository index
-echo "[INFO] Updating ATOMS package repositories..."
-scilab-cli -nb -quit -e "atomsSystemUpdate();"
-
-# 2. Install optional signal processing & numerical extensions
-echo "[INFO] Installing ATOMS signal processing modules..."
-scilab-cli -nb -quit -e "atomsInstall('signal');"
-
-# 3. Query and verify all installed ATOMS toolboxes
-echo "[INFO] Verifying installed ATOMS modules:"
-scilab-cli -nb -quit -e "atomsDispInstalled();"
-
-# 4. Execute the linear convolution script in headless batch mode
-echo "[INFO] Executing linear convolution simulation (lap4_ex6.sci)..."
-scilab-cli -nb -f src/lap4_ex6.sci
-
-echo "[SUCCESS] Batch convolution execution completed successfully!"
-\end{lstlisting}
 \end{enumerate}
 
 
