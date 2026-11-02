@@ -373,6 +373,40 @@ Scilab provides several dedicated open-source toolboxes available via its ATOMS 
     \item \textbf{SciCV (Scilab Computer Vision Toolbox):} A modern bridge interfacing recent OpenCV releases (OpenCV 4.x) with Scilab data structures.
 \end{enumerate}
 
+\paragraph{ATOMS Image Processing Package Installation via Bash:}
+Scilab provides the ATOMS (AuTOmatic Modules Management for Scilab) package repository system. While modules can be installed interactively via the Scilab GUI or prompt, in automated test environments, continuous integration, or headless systems, toolboxes can be downloaded and installed non-interactively using a Bash script interfacing with \texttt{scilab-cli}:
+
+\begin{lstlisting}[language=bash, caption={Bash script to install and load the IPCV toolbox via ATOMS}]
+#!/usr/bin/env bash
+# ==============================================================================
+# Script: install_atoms_image.sh
+# Description: Automated installation of IPCV toolbox via Scilab CLI
+# ==============================================================================
+
+if ! command -v scilab-cli &> /dev/null; then
+    echo "[ERROR] scilab-cli not found in system PATH."
+    exit 1
+fi
+
+echo "[INFO] Updating Scilab ATOMS repository metadata..."
+scilab-cli -nb -quit -e "atomsSystemUpdate();"
+
+echo "[INFO] Installing IPCV (Image Processing and Computer Vision) toolbox..."
+scilab-cli -nb -quit -e "atomsInstall('IPCV');"
+
+echo "[INFO] Verifying IPCV installation and auto-loading..."
+scilab-cli -nb -quit -e "if atomsIsLoaded('IPCV') then disp('IPCV is active'); else atomsLoad('IPCV'); disp('IPCV loaded successfully'); end"
+
+echo "[SUCCESS] Image processing toolbox installed and ready for use!"
+\end{lstlisting}
+Within the Scilab interactive terminal, the equivalent commands are:
+\begin{lstlisting}[language=Scilab, caption={Scilab console commands for ATOMS toolbox management}]
+atomsSystemUpdate();       // Update module catalog
+atomsInstall("IPCV");      // Download and install IPCV
+atomsLoad("IPCV");         // Load IPCV into active session
+atomsIsLoaded("IPCV")      // Returns %T if successfully loaded
+\end{lstlisting}
+
 \paragraph{Demonstration: Digital Image Watermarking via Alpha Blending:}
 Digital watermarking embeds copyright logos or ownership signatures into a host image to assert intellectual property rights. Alpha blending combines a host image $H(x, y)$ and a watermark logo $W(x, y)$ resized to matching spatial dimensions $[h, w]$:
 \begin{equation}
@@ -594,6 +628,41 @@ y(n) = \sum_{k=-\infty}^{\infty} h(k)x(n - k).
         \includegraphics[width=\textwidth]{figures/plot_and_energies.png}
         \caption{$x(n)$ and $y(n)$ with their energies respectively.}
     \end{figure}
+
+    \paragraph{ATOMS Signal Processing Setup and Headless Batch Execution via Bash:}
+    To run the discrete-time convolution analysis headlessly in server or automated grading environments, a Bash script is utilized to ensure required ATOMS signal modules are installed and execute the Scilab script in batch mode:
+
+\begin{lstlisting}[language=bash, caption={Bash script for ATOMS package setup and headless execution in Exercise 6}]
+#!/usr/bin/env bash
+# ==============================================================================
+# Script: setup_and_run_ex6.sh
+# Description: Automated ATOMS setup and batch execution of Exercise 6
+# ==============================================================================
+
+# Verify Scilab command-line executable exists
+if ! command -v scilab-cli &> /dev/null; then
+    echo "[ERROR] scilab-cli is not installed or not in system PATH."
+    exit 1
+fi
+
+# 1. Update ATOMS repository index
+echo "[INFO] Updating ATOMS package repositories..."
+scilab-cli -nb -quit -e "atomsSystemUpdate();"
+
+# 2. Install optional signal processing & numerical extensions
+echo "[INFO] Installing ATOMS signal processing modules..."
+scilab-cli -nb -quit -e "atomsInstall('signal');"
+
+# 3. Query and verify all installed ATOMS toolboxes
+echo "[INFO] Verifying installed ATOMS modules:"
+scilab-cli -nb -quit -e "atomsDispInstalled();"
+
+# 4. Execute the linear convolution script in headless batch mode
+echo "[INFO] Executing linear convolution simulation (lap4_ex6.sci)..."
+scilab-cli -nb -f src/lap4_ex6.sci
+
+echo "[SUCCESS] Batch convolution execution completed successfully!"
+\end{lstlisting}
 \end{enumerate}
 
 
