@@ -131,7 +131,61 @@ All computational scripts and graphical outputs adhere to the following conventi
 % =================================================================
 \subsection{Exercise 1} \label{sec:ex1}
 % =================================================================
-% [DO NOT ADD YET]
+\noindent\textbf{Question:}
+For the discrete-time signal $x(n)$, find the corresponding Z-Transform and its Region of Convergence (ROC):
+\[
+x(n) = 2\delta(n + 2) - \delta(n + 1) + 2\delta(n) - 3\delta(n - 1) + 4\delta(n - 2)
+\]
+
+\noindent\textbf{Answer:}
+The given sequence $x(n)$ is a finite-duration, two-sided sequence composed of shifted and scaled unit impulse functions $\delta(n - n_0)$. The sample values across the integer support $n \in [-2, 2]$ are explicitly given by:
+\begin{align*}
+    n &= -2: & x(-2) &= 2, \\
+    n &= -1: & x(-1) &= -1, \\
+    n &= 0:  & x(0)  &= 2, \\
+    n &= 1:  & x(1)  &= -3, \\
+    n &= 2:  & x(2)  &= 4,
+\end{align*}
+and $x(n) = 0$ for all $|n| > 2$. In vector notation with the origin marker ($\uparrow$) positioned at $n = 0$:
+\[
+x(n) = [2, -1, \org{2}, -3, 4].
+\]
+
+\paragraph{Z-Transform Derivation:}
+By definition of the bilateral Z-transform:
+\begin{equation*}
+    X(z) = \mathcal{Z}\{x(n)\} = \sum_{n=-\infty}^{+\infty} x(n) z^{-n}.
+\end{equation*}
+Using the sifting property of the unit impulse function $\mathcal{Z}\{\delta(n - n_0)\} = z^{-n_0}$ and applying linearity:
+\begin{align*}
+    X(z) &= \sum_{n=-2}^{2} x(n) z^{-n} \\
+    &= x(-2)z^2 + x(-1)z^1 + x(0)z^0 + x(1)z^{-1} + x(2)z^{-2} \\
+    &= 2z^2 - z + 2 - 3z^{-1} + 4z^{-2}.
+\end{align*}
+Expressing $X(z)$ in rational form with a common denominator of $z^2$:
+\begin{equation}
+    X(z) = \frac{2z^4 - z^3 + 2z^2 - 3z + 4}{z^2}.
+    \label{eq:ex1_xz}
+\end{equation}
+
+\paragraph{Region of Convergence (ROC):}
+The Region of Convergence is defined as the set of complex numbers $z$ for which the power series converges absolutely, i.e., $\sum_{n=-2}^{2} |x(n) z^{-n}| < \infty$:
+\begin{itemize}
+    \item Due to the non-causal components ($n < 0$), namely the polynomial terms $2z^2 - z$, as $|z| \to \infty$, $|X(z)| \to \infty$. Consequently, the point at infinity $z = \infty$ does not belong to the ROC.
+    \item Due to the causal components ($n > 0$), namely $-3z^{-1} + 4z^{-2} = -\frac{3}{z} + \frac{4}{z^2}$, as $|z| \to 0$, $|X(z)| \to \infty$ due to the double pole at the origin $z = 0$. Consequently, the point $z = 0$ does not belong to the ROC.
+    \item For any finite, non-zero complex value $z$ ($0 < |z| < \infty$), the sum comprises a finite number of finite terms and is therefore strictly bounded.
+\end{itemize}
+Thus, the Region of Convergence is:
+\begin{equation}
+    \text{ROC}: 0 < |z| < \infty \quad (\text{the entire complex $z$-plane except } z = 0 \text{ and } z = \infty).
+    \label{eq:ex1_roc}
+\end{equation}
+
+\noindent\textbf{Remark on Stability and Fourier Transform:}
+Because the ROC includes the unit circle $|z| = 1$, the Discrete-Time Fourier Transform (DTFT) of $x(n)$ exists and is obtained directly by evaluating $X(z)$ on the unit circle $z = e^{j\omega}$:
+\[
+X(e^{j\omega}) = 2e^{j2\omega} - e^{j\omega} + 2 - 3e^{-j\omega} + 4e^{-j2\omega} = 2 - 4j\sin(\omega) + 4\cos(2\omega) + 2j\sin(2\omega).
+\]
 
 % =================================================================
 \subsection{Exercise 2}\label{sec:ex2}
@@ -182,7 +236,72 @@ By linearity, we have
 % =================================================================
 \subsection{Exercise 3}\label{sec:ex3}
 % =================================================================
-% [DO NOT ADD YET]
+\noindent\textbf{Question:}
+Find the z-Transform and the ROC of the following discrete-time signal:
+\[
+x(n) = 0.5^n u(n) + 0.9^n u(-n - 1)
+\]
+
+\noindent\textbf{Answer:}
+The discrete-time sequence $x(n)$ is a two-sided sequence composed of the linear combination of a causal (right-sided) sequence and an anti-causal (left-sided) sequence:
+\begin{equation*}
+    x(n) = x_1(n) + x_2(n),
+\end{equation*}
+where $x_1(n) = 0.5^n u(n)$ and $x_2(n) = 0.9^n u(-n - 1)$.
+
+\paragraph{Z-Transform of the Causal Component $x_1(n)$:}
+For the right-sided sequence $x_1(n) = 0.5^n u(n)$:
+\begin{equation*}
+    X_1(z) = \sum_{n=-\infty}^{+\infty} \left[0.5^n u(n)\right] z^{-n} = \sum_{n=0}^{+\infty} \left(0.5 z^{-1}\right)^n.
+\end{equation*}
+This geometric series converges if and only if the magnitude of the common ratio is strictly less than 1:
+\begin{equation*}
+    |0.5 z^{-1}| < 1 \implies |z| > 0.5.
+\end{equation*}
+Thus, $\text{ROC}_1 = \{z \in \mathbb{C} : |z| > 0.5\}$. Under this condition, evaluating the infinite geometric sum $\sum_{n=0}^{\infty} q^n = \frac{1}{1 - q}$ with $q = 0.5 z^{-1}$:
+\begin{equation*}
+    X_1(z) = \frac{1}{1 - 0.5 z^{-1}} = \frac{z}{z - 0.5}.
+\end{equation*}
+
+\paragraph{Z-Transform of the Anti-Causal Component $x_2(n)$:}
+The unit step $u(-n - 1)$ is non-zero only when $-n - 1 \ge 0 \iff n \le -1$. Therefore:
+\begin{equation*}
+    X_2(z) = \sum_{n=-\infty}^{+\infty} \left[0.9^n u(-n - 1)\right] z^{-n} = \sum_{n=-\infty}^{-1} 0.9^n z^{-n}.
+\end{equation*}
+Applying the change of summation index $m = -n$ (where $m$ ranges from $1$ to $+\infty$):
+\begin{equation*}
+    X_2(z) = \sum_{m=1}^{+\infty} 0.9^{-m} z^m = \sum_{m=1}^{+\infty} \left(\frac{z}{0.9}\right)^m.
+\end{equation*}
+This geometric series converges if and only if:
+\begin{equation*}
+    \left|\frac{z}{0.9}\right| < 1 \implies |z| < 0.9.
+\end{equation*}
+Thus, $\text{ROC}_2 = \{z \in \mathbb{C} : |z| < 0.9\}$. When converging, using $\sum_{m=1}^{\infty} w^m = \frac{w}{1 - w}$ with $w = \frac{z}{0.9}$:
+\begin{equation*}
+    X_2(z) = \frac{\frac{z}{0.9}}{1 - \frac{z}{0.9}} = \frac{z}{0.9 - z} = -\frac{z}{z - 0.9} = -\frac{1}{1 - 0.9 z^{-1}}.
+\end{equation*}
+
+\paragraph{Combined Z-Transform and Region of Convergence:}
+Applying the linearity property of the Z-transform, $X(z) = X_1(z) + X_2(z)$:
+\begin{align*}
+    X(z) &= \frac{1}{1 - 0.5 z^{-1}} - \frac{1}{1 - 0.9 z^{-1}} \\
+    &= \frac{z}{z - 0.5} - \frac{z}{z - 0.9} \\
+    &= \frac{z(z - 0.9) - z(z - 0.5)}{(z - 0.5)(z - 0.9)} \\
+    &= \frac{z^2 - 0.9z - z^2 + 0.5z}{(z - 0.5)(z - 0.9)} \\
+    &= \frac{-0.4z}{(z - 0.5)(z - 0.9)} = \frac{-0.4 z^{-1}}{(1 - 0.5 z^{-1})(1 - 0.9 z^{-1})}.
+\end{align*}
+By linearity, the overall Region of Convergence is the intersection of the individual ROCs:
+\begin{align*}
+    \text{ROC} &= \text{ROC}_1 \cap \text{ROC}_2 \\
+    &= \{z \in \mathbb{C} : |z| > 0.5\} \cap \{z \in \mathbb{C} : |z| < 0.9\} \\
+    &= \{z \in \mathbb{C} : 0.5 < |z| < 0.9\}.
+\end{align*}
+
+\noindent\textbf{Analytical Observations:}
+\begin{itemize}
+    \item \textbf{Annular Geometry:} Because $x(n)$ is a two-sided sequence, its ROC is an open annular ring bounded on the interior by the pole at $z = 0.5$ and on the exterior by the pole at $z = 0.9$.
+    \item \textbf{BIBO Stability and DTFT Convergence:} Crucially, the unit circle $|z| = 1$ is \emph{not} included within the ROC since $|z| < 0.9 < 1$. Consequently, the sequence does not possess a convergent Discrete-Time Fourier Transform (DTFT), and an LTI system characterized by the impulse response $h(n) = x(n)$ is BIBO unstable.
+\end{itemize}
 
 % =================================================================
 \subsection{Exercise 4}\label{sec:ex4}
@@ -235,7 +354,67 @@ The discrete audio waveform is represented as a standard 1D array in Scilab. Poi
 % =================================================================
 \subsection{Exercise 5}\label{sec:ex5}
 % =================================================================
-% [DO NOT ADD YET]
+\noindent\textbf{Question:}
+Investigate the existing library or toolbox in Scilab for image processing. Then, do an example or a demo to show a simple manipulation (e.g., Histogram display, histogram equalization, blur, and watermarking) on a digital image.
+
+\noindent\textbf{Answer:}
+Scilab provides several dedicated open-source toolboxes available via its ATOMS package manager to process 2D/3D digital images and perform computer vision tasks:
+\begin{enumerate}
+    \item \textbf{IPCV (Image Processing and Computer Vision Toolbox):} The most comprehensive and widely adopted vision package in Scilab. Maintained by Vincent Couvert and Jonathan Rouzaud-Cornabas, IPCV includes over 150 functions:
+    \begin{itemize}
+        \item File I/O and display: \texttt{imread}, \texttt{imwrite}, \texttt{imshow}, \texttt{imsave}.
+        \item Color conversions: \texttt{rgb2gray}, \texttt{gray2ind}, \texttt{rgb2hsv}.
+        \item Intensity enhancements: \texttt{imhist} (histogram computation), \texttt{imhistequal} (histogram equalization), \texttt{imadjust} (dynamic range stretching).
+        \item Spatial filtering: \texttt{fspecial} (creating Gaussian, Sobel, Laplacian kernels), \texttt{imfilter} (2D spatial convolution and correlation).
+        \item Image arithmetic: \texttt{imlincomb} (linear combination/blending), \texttt{imadd}, \texttt{imsubtract}, \texttt{immultiply}.
+        \item Morphological operations: \texttt{imdilate}, \texttt{imerode}, \texttt{imopen}, \texttt{imclose}.
+    \end{itemize}
+    \item \textbf{SIVP (Scilab Image and Video Processing Toolbox):} A high-performance toolbox interfacing directly with OpenCV C++ libraries. It specializes in real-time camera video capture, video file decoding, optical flow estimation, and edge tracking.
+    \item \textbf{SciCV (Scilab Computer Vision Toolbox):} A modern bridge interfacing recent OpenCV releases (OpenCV 4.x) with Scilab data structures.
+\end{enumerate}
+
+\paragraph{Demonstration: Digital Image Watermarking via Alpha Blending:}
+Digital watermarking embeds copyright logos or ownership signatures into a host image to assert intellectual property rights. Alpha blending combines a host image $H(x, y)$ and a watermark logo $W(x, y)$ resized to matching spatial dimensions $[h, w]$:
+\begin{equation}
+    I_{\text{watermarked}}(x, y) = \alpha \cdot H(x, y) + (1 - \alpha) \cdot W(x, y),
+    \label{eq:watermark_blend}
+\end{equation}
+where $\alpha \in [0, 1]$ controls the blending ratio. Choosing $\alpha = 0.8$ preserves $80\%$ of the host image luminance and color saturation while embedding $20\%$ of the watermark logo, making the mark distinctly identifiable without obscuring essential features of the host.
+
+\paragraph{Scilab Script Implementation:}
+The watermarking demonstration is implemented using Scilab and the IPCV toolbox:
+\begin{lstlisting}[language=Scilab, caption={Digital image watermarking and alpha blending in Scilab (IPCV)}]
+atomsLoad("IPCV");
+
+// 1. Load host image and logo/watermark from IPCV library
+host = imread(fullpath(getIPCVpath() + "/images/peppers.png"));
+logo = imread(fullpath(getIPCVpath() + "/images/logo.png"));
+
+// 2. Resize logo to match host spatial dimensions [h, w]
+[h, w, c] = size(host);
+logo_resized = imresize(logo, [h, w]);
+
+// 3. Alpha blend: Watermarked = 0.8 * Host + 0.2 * Watermark
+watermarked = imlincomb(0.8, host, 0.2, logo_resized);
+
+// 4. Display the original, watermark, and blended result
+figure("Figure_Name", "Watermarking / Alpha Blending");
+subplot(1, 3, 1); imshow(host);         title("Host Image");
+subplot(1, 3, 2); imshow(logo_resized); title("Watermark");
+subplot(1, 3, 3); imshow(watermarked);  title("Watermarked Image (80/20 Blend)");
+\end{lstlisting}
+
+\noindent\textbf{Experimental Results:}
+The three-panel output generated from the Scilab script is shown in Figure~\ref{fig:ex5_watermarking}:
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{figures/ex5_watermarking.png}
+    \caption{Digital image watermarking demonstration: (left) host image, (center) resized watermark logo, (right) watermarked image with an $80/20$ alpha blend.}
+    \label{fig:ex5_watermarking}
+\end{figure}
+
+\noindent\textbf{Remarks:}
+In Scilab, images are represented as multi-dimensional numerical tensors of type \texttt{uint8} with values in the range $[0, 255]$. The \texttt{imlincomb} function performs saturation arithmetic, automatically clamping intermediate sum values to $255$ and preventing numerical wrap-around overflow artifacts.
 
 % =================================================================
 \subsection{Exercise 6}\label{sec:ex6}
@@ -421,10 +600,212 @@ y(n) = \sum_{k=-\infty}^{\infty} h(k)x(n - k).
 % =================================================================
 \subsection{Exercise 7}\label{sec:ex7}
 % =================================================================
-% [DO NOT ADD YET]
+\noindent\textbf{Question:}
+For a periodic signal $x(n)$ of length $N$ and impulse response $h(n)$ of length $M$, the circular convolution between $x(n)$ and $h(n)$ is defined as
+\[
+y(n) = \sum_{k=0}^{M-1} h(k) x((n - k) \bmod N).
+\]
+Explain why $y(n)$ can be derived that way.
+\begin{enumerate}
+    \item Compute the convolution $y(n)$ of $x(n) = [1 \uparrow, 2, -3, 2, 1]$ and $h(n) = [1 \uparrow, 0, -1, -1, 1]$ using the ``folding and shifting'' method. Implement your answer with Scilab script.
+    \item Compute the convolution $y(n)$ of $x(n) = [1 \uparrow, 2, -3, 2, 1]$ and $h(n) = [1 \uparrow, 0, -1, -1, 1]$ using the matrix method. Implement your answer with Scilab script.
+    \item Drawing $x(n)$, $y(n)$ and energy of discrete signals in the same figure.
+\end{enumerate}
+
+\noindent\textbf{Answer:}
+\paragraph{Theoretical Derivation of Circular Convolution:}
+Consider a discrete-time signal $\tilde{x}(n)$ that is strictly periodic with fundamental period $N$, such that $\tilde{x}(n) = \tilde{x}(n + rN)$ for all integers $r$. When this periodic signal is fed into a linear time-invariant (LTI) system with a finite impulse response $h(n)$ of length $M$, the output sequence $\tilde{y}(n)$ is obtained via the linear convolution sum:
+\begin{equation*}
+    \tilde{y}(n) = \sum_{k=-\infty}^{+\infty} h(k) \tilde{x}(n - k) = \sum_{k=0}^{M-1} h(k) \tilde{x}(n - k).
+\end{equation*}
+Because $\tilde{x}(n)$ is $N$-periodic, the argument $n - k$ can be replaced by its equivalent modulo residue $m = (n - k) \bmod N \in [0, N-1]$:
+\begin{equation*}
+    \tilde{x}(n - k) = x((n - k) \bmod N),
+\end{equation*}
+where $x(n)$ is the primary period sequence defined on $n \in [0, N-1]$. Restricting our attention to the fundamental period of the output $n \in [0, N-1]$, the convolution sum becomes:
+\begin{equation}
+    y(n) = \sum_{k=0}^{M-1} h(k) x((n - k) \bmod N), \qquad 0 \le n \le N-1.
+    \label{eq:circ_conv_proof}
+\end{equation}
+Furthermore, in the transform domain, taking the $N$-point Discrete Fourier Transform (DFT) of both sequences yields:
+\begin{equation*}
+    Y(k) = X(k) \cdot H(k), \qquad k = 0, 1, \dots, N-1.
+\end{equation*}
+By the circular convolution theorem of the DFT, pointwise multiplication of DFT spectra corresponds in the discrete-time domain directly to circular convolution, which aliases the linear convolution sequence $y_{\text{linear}}(n)$:
+\begin{equation}
+    y(n) = \sum_{r=-\infty}^{+\infty} y_{\text{linear}}(n + rN), \qquad 0 \le n \le N-1.
+    \label{eq:circ_aliasing}
+\end{equation}
+Hence, equation~(\ref{eq:circ_conv_proof}) is the exact mathematical formulation of circular convolution.
+
+\begin{enumerate}
+    \item \textbf{Folding and Shifting Method:}\\[0.5ex]
+    We are given the two discrete sequences of length $N = M = 5$:
+    \begin{align*}
+        x(n) &= [1 \uparrow, 2, -3, 2, 1] \implies x(0)=1, \; x(1)=2, \; x(2)=-3, \; x(3)=2, \; x(4)=1, \\
+        h(n) &= [1 \uparrow, 0, -1, -1, 1] \implies h(0)=1, \; h(1)=0, \; h(2)=-1, \; h(3)=-1, \; h(4)=1.
+    \end{align*}
+    Expanding the summation for $N = 5$:
+    \begin{align*}
+        y(n) &= \sum_{k=0}^{4} h(k) x((n - k) \bmod 5) \\
+        &= 1 \cdot x(n) + 0 \cdot x((n-1)\bmod 5) - 1 \cdot x((n-2)\bmod 5) \\
+        &\quad - 1 \cdot x((n-3)\bmod 5) + 1 \cdot x((n-4)\bmod 5) \\
+        &= x(n) - x((n-2)\bmod 5) - x((n-3)\bmod 5) + x((n-4)\bmod 5).
+    \end{align*}
+    Evaluating $y(n)$ step-by-step for each $n \in \{0, 1, 2, 3, 4\}$:
+    \begin{align*}
+        y(0) &= x(0) - x(3) - x(2) + x(1) = 1 - 2 - (-3) + 2 = 1 - 2 + 3 + 2 = 4, \\
+        y(1) &= x(1) - x(4) - x(3) + x(2) = 2 - 1 - 2 + (-3) = 2 - 1 - 2 - 3 = -4, \\
+        y(2) &= x(2) - x(0) - x(4) + x(3) = -3 - 1 - 1 + 2 = -3, \\
+        y(3) &= x(3) - x(1) - x(0) + x(4) = 2 - 2 - 1 + 1 = 0, \\
+        y(4) &= x(4) - x(2) - x(1) + x(0) = 1 - (-3) - 2 + 1 = 1 + 3 - 2 + 1 = 3.
+    \end{align*}
+    Thus, the circular convolution sequence is:
+    \begin{equation}
+        y(n) = [4 \uparrow, -4, -3, 0, 3].
+        \label{eq:ex7_result}
+    \end{equation}
+
+    \item \textbf{Matrix Method:}\\[0.5ex]
+    Circular convolution can be formulated as a matrix-vector product:
+    \begin{equation}
+        \mathbf{y} = \mathbf{X}_c \mathbf{h},
+        \label{eq:circ_matrix_mult}
+    \end{equation}
+    where $\mathbf{h} = [1, 0, -1, -1, 1]^T$ and $\mathbf{X}_c$ is a $5 \times 5$ circulant matrix formed by circularly shifting $x(n)$:
+    \begin{equation}
+        \mathbf{X}_c = \begin{bmatrix}
+            x(0) & x(4) & x(3) & x(2) & x(1) \\
+            x(1) & x(0) & x(4) & x(3) & x(2) \\
+            x(2) & x(1) & x(0) & x(4) & x(3) \\
+            x(3) & x(2) & x(1) & x(0) & x(4) \\
+            x(4) & x(3) & x(2) & x(1) & x(0)
+        \end{bmatrix} = \begin{bmatrix}
+            1 & 1 & 2 & -3 & 2 \\
+            2 & 1 & 1 & 2 & -3 \\
+            -3 & 2 & 1 & 1 & 2 \\
+            2 & -3 & 2 & 1 & 1 \\
+            1 & 2 & -3 & 2 & 1
+        \end{bmatrix}.
+    \end{equation}
+    Performing the matrix multiplication:
+    \begin{equation}
+        \mathbf{y} = \begin{bmatrix}
+            y(0) \\ y(1) \\ y(2) \\ y(3) \\ y(4)
+        \end{bmatrix} =
+        \begin{bmatrix}
+            1 & 1 & 2 & -3 & 2 \\
+            2 & 1 & 1 & 2 & -3 \\
+            -3 & 2 & 1 & 1 & 2 \\
+            2 & -3 & 2 & 1 & 1 \\
+            1 & 2 & -3 & 2 & 1
+        \end{bmatrix}
+        \begin{bmatrix}
+            1 \\ 0 \\ -1 \\ -1 \\ 1
+        \end{bmatrix} =
+        \begin{bmatrix}
+            4 \\ -4 \\ -3 \\ 0 \\ 3
+        \end{bmatrix}.
+    \end{equation}
+    The matrix calculation yields $y(n) = [4 \uparrow, -4, -3, 0, 3]$, which exactly matches the folding and shifting result.
+
+    \item \textbf{Signal Energy and Scilab Implementation:}\\[0.5ex]
+    The energy of a discrete-time signal $s(n)$ of length $N$ is defined as $E_s = \sum_{n=0}^{N-1} |s(n)|^2$:
+    \begin{align*}
+        E_x &= \sum_{n=0}^{4} |x(n)|^2 = 1^2 + 2^2 + (-3)^2 + 2^2 + 1^2 = 1 + 4 + 9 + 4 + 1 = 19, \\
+        E_y &= \sum_{n=0}^{4} |y(n)|^2 = 4^2 + (-4)^2 + (-3)^2 + 0^2 + 3^2 = 16 + 16 + 9 + 0 + 9 = 50.
+    \end{align*}
+    The complete Scilab script executing the folding and shifting method, the matrix formulation, energy evaluations, and stem-plot generation is given below:
+
+\begin{lstlisting}[language=Scilab, caption={Circular convolution, energy computation, and visualization in Scilab}]
+clear; clc; clf;
+
+// 1. Data definition
+x = [1, 2, -3, 2, 1];      // x(0)=1, length N=5
+h = [1, 0, -1, -1, 1];     // h(0)=1, length M=5
+N = length(x);
+M = length(h);
+n = 0 : N - 1;
+
+// 2. Folding and shifting method
+y_fs = zeros(1, N);
+for i = 0 : N - 1
+    idx = pmodulo(i - (0 : M - 1), N) + 1; // 1-based indexing
+    x_fs = x(idx);
+    y_fs(i + 1) = sum(h .* x_fs);
+end
+disp("y via Folding and Shifting:");
+disp(y_fs);
+
+// 3. Matrix method (Circulant Matrix)
+Xc = zeros(N, M);
+for i = 0 : N - 1
+    for k = 0 : M - 1
+        Xc(i + 1, k + 1) = x(pmodulo(i - k, N) + 1);
+    end
+end
+y_mat = (Xc * h')';
+disp("y via Matrix Method:");
+disp(y_mat);
+
+// 4. Energy calculations
+ex = abs(x).^2;  Ex = sum(ex);
+ey = abs(y_mat).^2;  Ey = sum(ey);
+mprintf("Energy of x = %g, Energy of y = %g\n", Ex, Ey);
+
+// 5. Plotting discrete signals and energy
+scf(0); clf;
+subplot(2, 1, 1);
+plot2d3([n' - 0.08, n' + 0.08], [x', y_mat'], style=[2, 5], rect=[-0.5, -5, N - 0.5, 5]);
+xgrid(); xlabel("n"); ylabel("amplitude");
+title("x(n) and y(n) = circular convolution of x and h");
+legend(["x(n)"; "y(n)"], 1);
+
+subplot(2, 1, 2);
+plot2d3([n' - 0.08, n' + 0.08], [ex', ey'], style=[2, 5], rect=[-0.5, 0, N - 0.5, 20]);
+xgrid(); xlabel("n"); ylabel("|.|^2");
+title(msprintf("Energy per sample: Ex = %g, Ey = %g", Ex, Ey));
+legend(["|x(n)|^2"; "|y(n)|^2"], 1);
+\end{lstlisting}
+
+    The execution log verified identity between both methods and analytical values:
+\begin{lstlisting}[language=Scilab]
+"y via Folding and Shifting:"
+ 4.  -4.  -3.   0.   3.
+"y via Matrix Method:"
+ 4.  -4.  -3.   0.   3.
+Energy of x = 19, Energy of y = 50
+\end{lstlisting}
+
+    The resulting graphical stem plots illustrating the signal waveforms and energy distributions are displayed in Figure~\ref{fig:ex7_circular_conv}:
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=\textwidth]{figures/plot_circ_conv.png}
+        \caption{Circular convolution $y(n) = x(n) \circledast h(n)$ and discrete sample energies $E_x = 19$ and $E_y = 50$.}
+        \label{fig:ex7_circular_conv}
+    \end{figure}
+\end{enumerate}
 
 \section{Discussion}
-% [DO NOT ADD YET]
+The theoretical derivations and Scilab computational experiments conducted throughout Laboratory 4 provide several key insights:
+
+\begin{enumerate}
+    \item \textbf{Z-Transform and ROC Characteristics:}
+    \begin{itemize}
+        \item \emph{Finite-Duration Sequences (Exercise 1):} As demonstrated analytically, finite-length sequences converge over the entire complex plane, with the only possible exceptions at $z = 0$ (if $x(n)$ contains terms for $n > 0$) and $z = \infty$ (if $x(n)$ contains terms for $n < 0$). Because the unit circle $|z| = 1$ is guaranteed to lie within the ROC for any finite-length bounded signal, its DTFT always exists.
+        \item \emph{Exponential Sequences and Stability (Exercises 2 \& 3):} For infinite-duration sequences, the ROC geometry fundamentally dictates causality and stability. Causal sequences converge outside an exterior circle ($|z| > |a|$), while anti-causal sequences converge inside an interior disk ($|z| < |b|$). When summing causal and anti-causal components (Exercise 3), an annular region $0.5 < |z| < 0.9$ is formed. Since this ring does not enclose the unit circle $|z| = 1$, the resulting sequence is BIBO unstable and lacks a convergent Fourier transform.
+    \end{itemize}
+
+    \item \textbf{Linear versus Circular Convolution (Exercises 6 \& 7):}
+    \begin{itemize}
+        \item \emph{Length and Boundary Effects:} For sequences of lengths $N_x$ and $N_h$, linear convolution produces an extended sequence of length $L = N_x + N_h - 1 = 5 + 3 - 1 = 7$ (Exercise 6). Conversely, circular convolution operates over a fixed modulo base $N = 5$ (Exercise 7), resulting in an output of strictly length $N = 5$.
+        \item \emph{Time-Domain Aliasing:} Circular convolution inherently wraps the tail of the linear convolution back into the primary period: $y_{\text{circ}}(n) = \sum_{r} y_{\text{linear}}(n + rN)$. To perform linear convolution via circular convolution (such as when utilizing FFT-based fast convolution), both sequences must be zero-padded to at least length $L \ge N_x + N_h - 1$ prior to computing the circular convolution.
+        \item \emph{Matrix Representations:} Linear convolution corresponds to multiplication by a banded lower-triangular Toeplitz matrix $\mathbf{H}$, whereas circular convolution corresponds to multiplication by a circulant matrix $\mathbf{X}_c$, whose eigenvectors are the discrete Fourier basis vectors.
+    \end{itemize}
+
+    \item \textbf{Scilab Multimedia Processing Capabilities (Exercises 4 \& 5):}
+    Scilab proves to be a versatile platform for signal and multimedia engineering. Audio data is naturally handled as 1D arrays with built-in functions (\texttt{wavread}, \texttt{wavwrite}, \texttt{playsnd}), allowing rapid spatial envelope synthesis and filtering. For 2D image processing, the IPCV toolbox bridges high-level matrix manipulation with computer vision workflows (alpha blending, watermarking, spatial filtering), executing pixel-wise saturation arithmetic and spatial transformations cleanly.
+\end{enumerate}
 
 \section{References}
 \begin{itemize}
